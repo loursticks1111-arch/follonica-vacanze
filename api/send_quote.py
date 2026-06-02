@@ -240,7 +240,9 @@ def send_email(api_key: str, from_addr: str,
         with urllib.request.urlopen(req, timeout=10) as resp:
             return True, resp.read().decode()
     except urllib.error.HTTPError as e:
-        return False, e.read().decode()
+        error_body = e.read().decode()
+        print(f"[Resend] HTTP {e.code}: {error_body}")  # ← appare nei log Vercel
+        return False, error_body
     except Exception as e:
         return False, str(e)
 
