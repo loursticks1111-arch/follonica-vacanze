@@ -1,0 +1,58 @@
+{
+  "rif001": {
+    "nome": "RIF.001 — Bilocale con Giardino Privato",
+    "tipo": "Bilocale",
+    "capacita": 4,
+    "caratteristiche": "Giardino privato · Piano terra · Zona Pratoranieri · 2 passi dal mare",
+    "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-001.html"
+  },
+  "rif002": {
+    "nome": "RIF.002 — Trilocale con Giardino Privato",
+    "tipo": "Trilocale",
+    "capacita": 6,
+    "caratteristiche": "Giardino privato · Piano terra · Ideale per famiglie numerose",
+    "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-002.html"
+  },
+  "rif003": {
+    "nome": "RIF.003 — Bilocale con Terrazzo Vista Mare",
+    "tipo": "Bilocale",
+    "capacita": 4,
+    "caratteristiche": "Ampio terrazzo con vista mare · Primo piano",
+    "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-003.html"
+  },
+  "rif004": {
+    "nome": "RIF.004 — Trilocale con Vista sul Golfo",
+    "tipo": "Trilocale",
+    "capacita": 7,
+    "caratteristiche": "Vista panoramica sul golfo di Follonica · Primo piano",
+    "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-004.html"
+  },
+  "rif005": {
+    "nome": "RIF.005 — Bilocale con Vista Tramonto",
+    "tipo": "Bilocale",
+    "capacita": 4,
+    "caratteristiche": "Vista tramonto spettacolare · Secondo piano",
+    "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-005.html"
+  },
+  "rif006": {
+    "nome": "RIF.006 — Trilocale con Vista Mare",
+    "tipo": "Trilocale",
+    "capacita": 7,
+    "caratteristiche": "Vista mare · Secondo piano · Ampi spazi interni",
+    "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-006.html"
+  },
+  "rif007": {
+    "nome": "RIF.007 — Bilocale con Corte Privata",
+    "tipo": "Bilocale",
+    "capacita": 5,
+    "caratteristiche": "Corte privata esclusiva · Piano terra · A 20 metri dal mare",
+    "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-007.html"
+  },
+  "rif023": {
+    "nome": "RIF.023 — Trilocale con Terrazzo Vista Mare",
+    "tipo": "Trilocale",
+    "capacita": 6,
+    "caratteristiche": "Terrazzo con vista mare · Secondo piano",
+    "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-023.html"
+  }
+}

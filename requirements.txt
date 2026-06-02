@@ -1,0 +1,7 @@
+# requirements.txt
+# Pacchetti Python necessari per il backend su Vercel
+# Nota: check_availability.py e send_quote.py usano solo la stdlib Python,
+# quindi questo file è necessario solo se aggiungi dipendenze in futuro.
+
+# Per lo sviluppo locale in Jupyter (non installate da Vercel):
+# pip install python-dotenv jupyter jupyterlab

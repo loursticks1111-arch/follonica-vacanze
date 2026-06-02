@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifica disponibilità — FollonicaVacanze</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #F5EFE4; --sand-dark: #E8DDD0; --terra: #B85224;
+    --terra-dark: #8B3A10; --terra-light: #D4784A;
+    --sea: #2C6B7A; --sea-light: #4A9BAE;
+    --ink: #1C1812; --muted: #7A6E63; --border: #D8CEBE;
+    --white: #FDFAF6; --success: #4A7C59; --error: #C0392B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: linear-gradient(145deg, #F0E8D8 0%, #E8DDD0 40%, #F5EFE4 100%);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .container { width: 100%; max-width: 680px; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 32px; }
+  .header-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--terra); margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(26px, 5vw, 38px); font-weight: 600;
+    color: var(--ink); line-height: 1.2;
+  }
+  .header p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+
+  /* Steps */
+  .steps { display: flex; align-items: center; justify-content: center; margin-bottom: 28px; }
+  .step-dot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .step-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; transition: all 0.4s ease;
+  }
+  .step-circle.active  { background: var(--terra); color: white; box-shadow: 0 4px 16px rgba(184,82,36,.35); }
+  .step-circle.done    { background: var(--success); color: white; }
+  .step-circle.inactive{ background: var(--sand-dark); color: var(--muted); border: 1.5px solid var(--border); }
+  .step-label { font-size: 11px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+  .step-label.active { color: var(--terra); font-weight: 600; }
+  .step-connector { width: 80px; height: 2px; background: var(--border); margin: 0 4px 22px; transition: background .4s; }
+  .step-connector.done { background: var(--success); }
+
+  /* Card */
+  .card {
+    background: var(--white); border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 40px rgba(28,24,18,.08); overflow: hidden;
+  }
+  .card-header {
+    background: linear-gradient(135deg, var(--terra-dark) 0%, var(--terra) 60%, var(--terra-light) 100%);
+    padding: 22px 28px; display: flex; align-items: center; gap: 14px;
+  }
+  .card-header.sea { background: linear-gradient(135deg,#1D5C6A,var(--sea),var(--sea-light)); }
+  .card-header-icon {
+    width: 44px; height: 44px; background: rgba(255,255,255,.18);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .card-header-text h2 { font-family: 'Cormorant Garamond',serif; font-size: 20px; font-weight: 600; color: white; }
+  .card-header-text p  { font-size: 12.5px; color: rgba(255,255,255,.75); margin-top: 2px; }
+  .card-body { padding: 28px; }
+
+  /* Form */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label {
+    font-size: 11.5px; font-weight: 600; letter-spacing: .5px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .form-group input, .form-group select {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+    border-radius: 10px; font-family: 'DM Sans',sans-serif;
+    font-size: 14px; color: var(--ink); background: var(--sand);
+    transition: all .2s; appearance: none;
+  }
+  .form-group input:focus, .form-group select:focus {
+    outline: none; border-color: var(--terra); background: white;
+    box-shadow: 0 0 0 3px rgba(184,82,36,.1);
+  }
+  .form-group input::placeholder { color: #BBA98E; }
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾'; position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 12px;
+  }
+  .date-note { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--sea); margin-top: 4px; font-weight: 500; }
+
+  /* Buttons */
+  .btn {
+    width: 100%; padding: 15px; border: none; border-radius: 12px;
+    font-family: 'DM Sans',sans-serif; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: all .25s; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg,var(--terra-dark),var(--terra));
+    color: white; box-shadow: 0 4px 16px rgba(184,82,36,.3);
+  }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,82,36,.4); }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    background: transparent; color: var(--terra);
+    border: 1.5px solid var(--terra); margin-top: 10px;
+  }
+  .btn-secondary:hover { background: rgba(184,82,36,.06); }
+
+  /* Errori */
+  .error-msg { color: var(--error); font-size: 13px; margin-bottom: 14px; display: none; }
+
+  /* Spinner */
+  .spinner {
+    width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.3);
+    border-top-color: white; border-radius: 50%; animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Risultati */
+  .result-title { font-family: 'Cormorant Garamond',serif; font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .result-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .apt-card {
+    border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 10px; cursor: pointer;
+    transition: all .2s; background: var(--sand);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .apt-card:hover { border-color: var(--terra); background: white; }
+  .apt-card.selected { border-color: var(--terra); background: rgba(184,82,36,.05); box-shadow: 0 0 0 3px rgba(184,82,36,.12); }
+  .apt-icon {
+    width: 42px; height: 42px; background: linear-gradient(135deg,var(--sea),var(--sea-light));
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .apt-info { flex: 1; }
+  .apt-name { font-weight: 600; font-size: 14px; color: var(--ink); }
+  .apt-desc { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .apt-link { font-size: 12px; color: var(--terra); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; }
+  .apt-radio { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 50%; flex-shrink: 0; transition: all .2s; display: flex; align-items: center; justify-content: center; }
+  .apt-radio.checked { border-color: var(--terra); background: var(--terra); }
+  .apt-radio.checked::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; }
+
+  /* Nessuna disponibilità */
+  .no-avail { text-align: center; padding: 28px; background: var(--sand); border-radius: 12px; border: 1.5px solid var(--border); }
+  .no-avail .emoji { font-size: 32px; margin-bottom: 10px; }
+  .no-avail p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  /* Summary Step 2 */
+  .summary-box {
+    background: linear-gradient(135deg,var(--sea),var(--sea-light));
+    border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 14px; color: white;
+  }
+  .summary-text { font-size: 13px; line-height: 1.5; }
+  .summary-text strong { font-size: 14px; display: block; margin-bottom: 2px; }
+
+  /* Successo */
+  .success-screen { text-align: center; padding: 32px 20px; }
+  .success-icon {
+    width: 72px; height: 72px; background: linear-gradient(135deg,var(--success),#5D9A70);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 32px; margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(74,124,89,.3);
+  }
+  .success-screen h2 { font-family: 'Cormorant Garamond',serif; font-size: 26px; color: var(--ink); margin-bottom: 8px; }
+  .success-screen p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+  .success-new { max-width: 260px; margin: 20px auto 0; }
+
+  /* Privacy */
+  .privacy-note { font-size: 11.5px; color: var(--muted); text-align: center; margin-top: 14px; line-height: 1.6; }
+  .privacy-note a { color: var(--terra); }
+
+  /* Animazione */
+  .panel { animation: slideIn .3s ease; }
+  @keyframes slideIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  @media(max-width:500px) {
+    .form-row, .form-row.triple { grid-template-columns: 1fr; }
+    .card-body { padding: 20px; }
+    .step-connector { width: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-label">🏖️ Follonica Vacanze</div>
+    <h1>Verifica disponibilità<br>& Richiedi preventivo</h1>
+    <p>Appartamenti sul mare a Follonica, Maremma Toscana</p>
+  </div>
+
+  <!-- Indicatore step -->
+  <div class="steps">
+    <div class="step-dot">
+      <div class="step-circle active" id="dot1">1</div>
+      <div class="step-label active" id="lbl1">Disponibilità</div>
+    </div>
+    <div class="step-connector" id="conn1"></div>
+    <div class="step-dot">
+      <div class="step-circle inactive" id="dot2">2</div>
+      <div class="step-label" id="lbl2">Preventivo</div>
+    </div>
+    <div class="step-connector" id="conn2"></div>
+    <div class="step-dot">
+      <div class="step-circle inactive" id="dot3">✓</div>
+      <div class="step-label" id="lbl3">Inviato</div>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <!-- ═══ STEP 1 — Selezione date ═══ -->
+    <div id="step1">
+      <div class="card-header">
+        <div class="card-header-icon">📅</div>
+        <div class="card-header-text">
+          <h2>Verifica disponibilità</h2>
+          <p>Arrivi e partenze solo di sabato</p>
+        </div>
+      </div>
+      <div class="card-body panel">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Data di arrivo (sabato)</label>
+            <input type="date" id="checkin">
+            <div class="date-note">📌 Solo sabati selezionabili</div>
+          </div>
+          <div class="form-group">
+            <label>Data di partenza (sabato)</label>
+            <input type="date" id="checkout">
+          </div>
+        </div>
+        <div class="form-row triple" style="margin-bottom:24px">
+          <div class="form-group">
+            <label>Adulti</label>
+            <div class="select-wrap">
+              <select id="adulti">
+                <option value="">—</option>
+                <option>1</option><option>2</option><option>3</option>
+                <option>4</option><option>5</option><option>6</option><option>7</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Bambini (fino a 12 anni)</label>
+            <div class="select-wrap">
+              <select id="bambini">
+                <option value="0">0</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="error-msg" id="err1"></div>
+        <button class="btn btn-primary" id="btnCheck" onclick="checkDisponibilita()">
+          Verifica disponibilità
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 1b — Risultati ═══ -->
+    <div id="step1b" style="display:none">
+      <div class="card-header">
+        <div class="card-header-icon">🏡</div>
+        <div class="card-header-text">
+          <h2>Appartamenti disponibili</h2>
+          <p id="period-label"></p>
+        </div>
+      </div>
+      <div class="card-body panel">
+        <div id="risultati"></div>
+        <div class="error-msg" id="err1b"></div>
+        <button class="btn btn-primary" onclick="goStep2()" style="margin-bottom:10px">
+          Richiedi preventivo →
+        </button>
+        <button class="btn btn-secondary" onclick="resetStep1()">← Modifica date</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 2 — Dati contatto ═══ -->
+    <div id="step2" style="display:none">
+      <div class="card-header sea">
+        <div class="card-header-icon">✉️</div>
+        <div class="card-header-text">
+          <h2>Richiedi preventivo</h2>
+          <p>Ti risponderemo entro poche ore</p>
+        </div>
+      </div>
+      <div class="card-body panel">
+        <div class="summary-box" id="summaryBox"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome *</label>
+            <input type="text" id="nome" placeholder="Mario">
+          </div>
+          <div class="form-group">
+            <label>Cognome *</label>
+            <input type="text" id="cognome" placeholder="Rossi">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>E-mail *</label>
+            <input type="email" id="email" placeholder="mario@email.it">
+          </div>
+          <div class="form-group">
+            <label>Telefono *</label>
+            <input type="tel" id="telefono" placeholder="+39 333 1234567">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:20px">
+          <label>Note aggiuntive</label>
+          <input type="text" id="note" placeholder="Es. piano preferito, esigenze particolari...">
+        </div>
+        <div class="error-msg" id="err2"></div>
+        <button class="btn btn-primary" id="btnSend" onclick="inviaPrevntivo()">
+          Invia richiesta preventivo
+        </button>
+        <button class="btn btn-secondary" onclick="backToRisultati()">← Torna agli appartamenti</button>
+        <p class="privacy-note">
+          Inviando accetti la nostra <a href="/privacy-policy">Privacy Policy</a>.<br>
+          I tuoi dati sono trattati esclusivamente per rispondere alla tua richiesta.
+        </p>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 3 — Conferma ═══ -->
+    <div id="step3" style="display:none">
+      <div class="card-body">
+        <div class="success-screen panel">
+          <div class="success-icon">✅</div>
+          <h2>Richiesta inviata!</h2>
+          <p>
+            Grazie <strong id="nomeConferma"></strong>!<br>
+            La tua richiesta è stata inviata. Ti risponderemo<br>
+            a <strong id="emailConferma"></strong> entro poche ore.
+          </p>
+          <button class="btn btn-primary success-new" onclick="nuovaRicerca()">
+            Nuova ricerca
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /card -->
+</div><!-- /container -->
+
+<script>
+// ════════════════════════════════════════════════════
+// ✏️  UNICA RIGA DA MODIFICARE:
+//     incolla qui l'URL del tuo progetto su Vercel
+//     Es: 'https://follonica-vacanze.vercel.app'
+// ════════════════════════════════════════════════════
+const BACKEND = '';   // ← lascia vuoto in locale (usa path relativi)
+
+// Emoji per tipo appartamento
+const EMOJI = {
+  'Bilocale':  '🌊',
+  'Trilocale': '⛵',
+};
+
+let selectedApt = null;
+let searchParams = {};
+
+// ─── Utilità date ───────────────────────────────────
+function isSabato(str) {
+  return new Date(str + 'T12:00:00').getDay() === 6;
+}
+function formatDate(str) {
+  return new Date(str + 'T12:00:00').toLocaleDateString('it-IT', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
+}
+
+// ─── Imposta data minima (prossimo sabato) ──────────
+window.addEventListener('DOMContentLoaded', () => {
+  const oggi = new Date();
+  const giorni = (6 - oggi.getDay() + 7) % 7 || 7;
+  const prossSab = new Date(oggi);
+  prossSab.setDate(oggi.getDate() + giorni);
+  const min = prossSab.toISOString().split('T')[0];
+  document.getElementById('checkin').min  = min;
+  document.getElementById('checkout').min = min;
+});
+
+// ─── Validazione date solo sabato ───────────────────
+document.getElementById('checkin').addEventListener('change', function() {
+  if (this.value && !isSabato(this.value)) {
+    showErr('err1', '⚠️ La data di arrivo deve essere un sabato.');
+    this.value = '';
+  } else {
+    hideErr('err1');
+    if (this.value) {
+      const nextSab = new Date(this.value + 'T12:00:00');
+      nextSab.setDate(nextSab.getDate() + 7);
+      document.getElementById('checkout').min = nextSab.toISOString().split('T')[0];
+      document.getElementById('checkout').value = '';
+    }
+  }
+});
+document.getElementById('checkout').addEventListener('change', function() {
+  if (this.value && !isSabato(this.value)) {
+    showErr('err1', '⚠️ La data di partenza deve essere un sabato.');
+    this.value = '';
+  } else hideErr('err1');
+});
+
+// ─── Step 1 — Verifica disponibilità ───────────────
+async function checkDisponibilita() {
+  const checkin  = document.getElementById('checkin').value;
+  const checkout = document.getElementById('checkout').value;
+  const adulti   = document.getElementById('adulti').value;
+  const bambini  = document.getElementById('bambini').value;
+
+  if (!checkin || !checkout) return showErr('err1', '⚠️ Seleziona le date di arrivo e partenza.');
+  if (!adulti)               return showErr('err1', '⚠️ Seleziona il numero di adulti.');
+  if (!isSabato(checkin) || !isSabato(checkout))
+                             return showErr('err1', '⚠️ Entrambe le date devono essere sabati.');
+  hideErr('err1');
+
+  const ospiti = parseInt(adulti) + parseInt(bambini || 0);
+  searchParams  = { checkin, checkout, adulti: parseInt(adulti), bambini: parseInt(bambini || 0), ospiti };
+
+  setLoading('btnCheck', true, 'Verifica in corso...');
+
+  try {
+    const res  = await fetch(`${BACKEND}/api/check_availability`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ checkin, checkout, ospiti }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Errore del server');
+
+    mostraRisultati(data.disponibili);
+
+  } catch (e) {
+    showErr('err1', `⚠️ Errore di connessione: ${e.message}. Riprova o contattaci.`);
+  } finally {
+    setLoading('btnCheck', false, 'Verifica disponibilità');
+  }
+}
+
+function mostraRisultati(disponibili) {
+  document.getElementById('step1').style.display   = 'none';
+  document.getElementById('step1b').style.display  = 'block';
+  document.getElementById('period-label').textContent =
+    `dal ${formatDate(searchParams.checkin)} al ${formatDate(searchParams.checkout)}`;
+
+  const box = document.getElementById('risultati');
+
+  if (!disponibili || disponibili.length === 0) {
+    box.innerHTML = `
+      <div class="no-avail">
+        <div class="emoji">😕</div>
+        <p><strong>Mi dispiace, per il periodo selezionato tutti gli appartamenti sono già prenotati.</strong><br><br>
+        Prova con date diverse oppure contattaci direttamente:<br>
+        <strong>📞 338 2233166</strong></p>
+      </div>`;
+  } else {
+    box.innerHTML = `
+      <div class="result-title">🎉 ${disponibili.length} ${disponibili.length === 1 ? 'appartamento disponibile' : 'appartamenti disponibili'}</div>
+      <div class="result-subtitle">Seleziona quello di tuo interesse per richiedere il preventivo</div>
+      ${disponibili.map(a => `
+        <div class="apt-card" onclick="selectApt(${JSON.stringify(a).replace(/"/g,'&quot;')})" id="card-${a.id}">
+          <div class="apt-icon">${EMOJI[a.tipo] || '🏡'}</div>
+          <div class="apt-info">
+            <div class="apt-name">${a.nome}</div>
+            <div class="apt-desc">${a.caratteristiche} · Max ${a.capacita} ospiti</div>
+            <a href="${a.url}" target="_blank" class="apt-link" onclick="event.stopPropagation()">
+              Vedi foto e dettagli ↗
+            </a>
+          </div>
+          <div class="apt-radio" id="radio-${a.id}"></div>
+        </div>`).join('')}`;
+  }
+}
+
+function selectApt(apt) {
+  document.querySelectorAll('.apt-card').forEach(c  => c.classList.remove('selected'));
+  document.querySelectorAll('.apt-radio').forEach(r => r.classList.remove('checked'));
+  document.getElementById('card-'  + apt.id).classList.add('selected');
+  document.getElementById('radio-' + apt.id).classList.add('checked');
+  selectedApt = apt;
+  hideErr('err1b');
+}
+
+function goStep2() {
+  if (!selectedApt) return showErr('err1b', '⚠️ Seleziona un appartamento per continuare.');
+  setStep(2);
+  document.getElementById('step1b').style.display = 'none';
+  document.getElementById('step2').style.display  = 'block';
+  document.getElementById('summaryBox').innerHTML = `
+    <div style="font-size:22px">🏡</div>
+    <div class="summary-text">
+      <strong>${selectedApt.nome}</strong>
+      📅 ${formatDate(searchParams.checkin)} → ${formatDate(searchParams.checkout)}
+      &nbsp;·&nbsp; 👥 ${searchParams.adulti} adulti${searchParams.bambini > 0 ? ', ' + searchParams.bambini + ' bambini' : ''}
+    </div>`;
+}
+
+function resetStep1() {
+  document.getElementById('step1b').style.display = 'none';
+  document.getElementById('step1').style.display  = 'block';
+  selectedApt = null;
+  setStep(1);
+}
+function backToRisultati() {
+  document.getElementById('step2').style.display  = 'none';
+  document.getElementById('step1b').style.display = 'block';
+  setStep(1);
+}
+
+// ─── Step 2 — Invio preventivo ──────────────────────
+async function inviaPrevntivo() {
+  const nome     = document.getElementById('nome').value.trim();
+  const cognome  = document.getElementById('cognome').value.trim();
+  const email    = document.getElementById('email').value.trim();
+  const telefono = document.getElementById('telefono').value.trim();
+  const note     = document.getElementById('note').value.trim();
+
+  if (!nome || !cognome || !email || !telefono)
+    return showErr('err2', '⚠️ Compila tutti i campi obbligatori (*).');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return showErr('err2', '⚠️ Inserisci un indirizzo email valido.');
+  hideErr('err2');
+
+  setLoading('btnSend', true, 'Invio in corso...');
+
+  try {
+    const res  = await fetch(`${BACKEND}/api/send_quote`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        nome, cognome, email, telefono, note,
+        appartamento: selectedApt,
+        ...searchParams,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Errore del server');
+
+    setStep(3);
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'block';
+    document.getElementById('nomeConferma').textContent  = nome;
+    document.getElementById('emailConferma').textContent = email;
+
+  } catch (e) {
+    showErr('err2', `⚠️ ${e.message}`);
+  } finally {
+    setLoading('btnSend', false, 'Invia richiesta preventivo');
+  }
+}
+
+function nuovaRicerca() {
+  ['checkin','checkout','nome','cognome','email','telefono','note'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('adulti').value  = '';
+  document.getElementById('bambini').value = '0';
+  selectedApt = null; searchParams = {};
+  document.getElementById('step3').style.display = 'none';
+  document.getElementById('step1').style.display = 'block';
+  setStep(1);
+}
+
+// ─── Utilità UI ─────────────────────────────────────
+function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block'; }
+function hideErr(id)       { document.getElementById(id).style.display = 'none'; }
+
+function setLoading(btnId, loading, label) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? `<div class="spinner"></div> ${label}`
+    : label;
+}
+
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById('dot' + i).className =
+      'step-circle ' + (i < n ? 'done' : i === n ? 'active' : 'inactive');
+    document.getElementById('lbl' + i).className =
+      'step-label' + (i === n ? ' active' : '');
+  });
+  [1,2].forEach(i => {
+    document.getElementById('conn' + i).className =
+      'step-connector' + (i < n ? ' done' : '');
+  });
+}
+</script>
+
+</body>
+</html>

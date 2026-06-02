@@ -1,0 +1,28 @@
+{
+  "__istruzioni__": "Sostituisci gli URL XXXXX con quelli reali di Kross Booking. Trovi gli URL in Kross → ogni appartamento → Esporta calendario iCal. Poi elimina questa riga.",
+
+  "rif001": {
+    "kross": "https://krossbooking.com/ical/XXXXXXXXXXXXXXXX.ics"
+  },
+  "rif002": {
+    "kross": "https://krossbooking.com/ical/XXXXXXXXXXXXXXXX.ics"
+  },
+  "rif003": {
+    "kross": "https://krossbooking.com/ical/XXXXXXXXXXXXXXXX.ics"
+  },
+  "rif004": {
+    "kross": "https://krossbooking.com/ical/XXXXXXXXXXXXXXXX.ics"
+  },
+  "rif005": {
+    "kross": "https://krossbooking.com/ical/XXXXXXXXXXXXXXXX.ics"
+  },
+  "rif006": {
+    "kross": "https://krossbooking.com/ical/XXXXXXXXXXXXXXXX.ics"
+  },
+  "rif007": {
+    "kross": "https://krossbooking.com/ical/XXXXXXXXXXXXXXXX.ics"
+  },
+  "rif023": {
+    "kross": "https://krossbooking.com/ical/XXXXXXXXXXXXXXXX.ics"
+  }
+}

@@ -1,0 +1,22 @@
+# Chiavi e variabili d'ambiente — MAI su GitHub
+.env.local
+.env*.local
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.ipynb_checkpoints/
+
+# Ambienti conda/venv
+env/
+venv/
+.conda/
+
+# Vercel
+.vercel/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
