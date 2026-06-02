@@ -1,5 +1,5 @@
 {
-  "__istruzioni__": "Sostituisci gli URL XXXXX con quelli reali di Kross Booking. Trovi gli URL in Kross → ogni appartamento → Esporta calendario iCal. Poi elimina questa riga.",
+  "__istruzioni__": "Sostituisci gli URL XXXXX con quelli reali di Kross Booking . Trovi gli URL in Kross → ogni appartamento → Esporta calendario iCal. Poi elimina questa riga.",
 
   "rif001": {
     "kross": "https://krossbooking.com/ical/XXXXXXXXXXXXXXXX.ics"
