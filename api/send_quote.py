@@ -140,8 +140,9 @@ def email_proprietario(p, cfg):
       %(row_nome)s
       %(row_email)s
       %(row_telefono)s
-      %(note_row)s
     </div>
+
+    %(sezione_note)s
 
     <div style="text-align:center;margin-top:8px">
       <a href="mailto:%(email)s?subject=Preventivo - %(site)s"
@@ -169,7 +170,13 @@ def email_proprietario(p, cfg):
         'row_nome':    row('Nome',     '%s %s' % (p['nome'], p['cognome'])),
         'row_email':   row('Email',    '<a href="mailto:%(e)s" style="color:#B85224">%(e)s</a>' % {'e': p['email']}),
         'row_telefono':row('Telefono', p['telefono']),
-        'note_row':    note_row,
+        'sezione_note': (
+            '<h2 style="color:#2C6B7A;font-size:13px;letter-spacing:1px;'
+            'text-transform:uppercase;margin:0 0 10px">Note aggiuntive</h2>'
+            '<div style="background:#FFF8F0;border-radius:10px;padding:16px 20px;'
+            'border-left:4px solid #E8A060;margin-bottom:22px;font-size:14px;'
+            'color:#1C1812;font-style:italic;line-height:1.7">%s</div>'
+        ) % p['note'] if p.get('note') else '',
         'email':       p['email'],
     }
     return html
