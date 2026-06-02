@@ -23,27 +23,14 @@
   }
   .container { width: 100%; max-width: 680px; }
 
-  /* Header */
   .header { text-align: center; margin-bottom: 32px; }
-  .header-label {
-    font-size: 11px; font-weight: 600; letter-spacing: 3px;
-    text-transform: uppercase; color: var(--terra); margin-bottom: 10px;
-  }
-  .header h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(26px, 5vw, 38px); font-weight: 600;
-    color: var(--ink); line-height: 1.2;
-  }
+  .header-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--terra); margin-bottom: 10px; }
+  .header h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 5vw, 38px); font-weight: 600; color: var(--ink); line-height: 1.2; }
   .header p { color: var(--muted); font-size: 14px; margin-top: 8px; }
 
-  /* Steps */
   .steps { display: flex; align-items: center; justify-content: center; margin-bottom: 28px; }
   .step-dot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .step-circle {
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600; transition: all 0.4s ease;
-  }
+  .step-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; transition: all .4s; }
   .step-circle.active  { background: var(--terra); color: white; box-shadow: 0 4px 16px rgba(184,82,36,.35); }
   .step-circle.done    { background: var(--success); color: white; }
   .step-circle.inactive{ background: var(--sand-dark); color: var(--muted); border: 1.5px solid var(--border); }
@@ -52,38 +39,23 @@
   .step-connector { width: 80px; height: 2px; background: var(--border); margin: 0 4px 22px; transition: background .4s; }
   .step-connector.done { background: var(--success); }
 
-  /* Card */
-  .card {
-    background: var(--white); border-radius: 20px;
-    border: 1px solid var(--border);
-    box-shadow: 0 8px 40px rgba(28,24,18,.08); overflow: hidden;
-  }
-  .card-header {
-    background: linear-gradient(135deg, var(--terra-dark) 0%, var(--terra) 60%, var(--terra-light) 100%);
-    padding: 22px 28px; display: flex; align-items: center; gap: 14px;
-  }
+  .card { background: var(--white); border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 8px 40px rgba(28,24,18,.08); overflow: hidden; }
+  .card-header { background: linear-gradient(135deg, var(--terra-dark) 0%, var(--terra) 60%, var(--terra-light) 100%); padding: 22px 28px; display: flex; align-items: center; gap: 14px; }
   .card-header.sea { background: linear-gradient(135deg,#1D5C6A,var(--sea),var(--sea-light)); }
-  .card-header-icon {
-    width: 44px; height: 44px; background: rgba(255,255,255,.18);
-    border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;
-  }
+  .card-header-icon { width: 44px; height: 44px; background: rgba(255,255,255,.18); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
   .card-header-text h2 { font-family: 'Cormorant Garamond',serif; font-size: 20px; font-weight: 600; color: white; }
   .card-header-text p  { font-size: 12.5px; color: rgba(255,255,255,.75); margin-top: 2px; }
   .card-body { padding: 28px; }
 
-  /* Form */
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
   .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+  .form-row.quad   { grid-template-columns: 1fr 1fr 1fr 1fr; }
   .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group label {
-    font-size: 11.5px; font-weight: 600; letter-spacing: .5px;
-    text-transform: uppercase; color: var(--muted);
-  }
+  .form-group label { font-size: 11.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
   .form-group input, .form-group select {
     width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
     border-radius: 10px; font-family: 'DM Sans',sans-serif;
-    font-size: 14px; color: var(--ink); background: var(--sand);
-    transition: all .2s; appearance: none;
+    font-size: 14px; color: var(--ink); background: var(--sand); transition: all .2s; appearance: none;
   }
   .form-group input:focus, .form-group select:focus {
     outline: none; border-color: var(--terra); background: white;
@@ -91,99 +63,102 @@
   }
   .form-group input::placeholder { color: #BBA98E; }
   .select-wrap { position: relative; }
-  .select-wrap::after {
-    content: '▾'; position: absolute; right: 14px; top: 50%;
-    transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 12px;
-  }
+  .select-wrap::after { content: '▾'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 12px; }
   .date-note { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--sea); margin-top: 4px; font-weight: 500; }
 
-  /* Buttons */
-  .btn {
-    width: 100%; padding: 15px; border: none; border-radius: 12px;
-    font-family: 'DM Sans',sans-serif; font-size: 15px; font-weight: 600;
-    cursor: pointer; transition: all .25s; display: flex; align-items: center; justify-content: center; gap: 8px;
+  /* Sezione animali */
+  .pets-section {
+    background: linear-gradient(135deg, #F0F7F9, #E8F3F6);
+    border: 1.5px solid #B8D8E0;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
   }
-  .btn-primary {
-    background: linear-gradient(135deg,var(--terra-dark),var(--terra));
-    color: white; box-shadow: 0 4px 16px rgba(184,82,36,.3);
+  .pets-title {
+    font-size: 12px; font-weight: 600; letter-spacing: .5px;
+    text-transform: uppercase; color: var(--sea);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
   }
+
+  .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-family: 'DM Sans',sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .25s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-primary { background: linear-gradient(135deg,var(--terra-dark),var(--terra)); color: white; box-shadow: 0 4px 16px rgba(184,82,36,.3); }
   .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,82,36,.4); }
   .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-  .btn-secondary {
-    background: transparent; color: var(--terra);
-    border: 1.5px solid var(--terra); margin-top: 10px;
-  }
+  .btn-secondary { background: transparent; color: var(--terra); border: 1.5px solid var(--terra); margin-top: 10px; }
   .btn-secondary:hover { background: rgba(184,82,36,.06); }
 
-  /* Errori */
   .error-msg { color: var(--error); font-size: 13px; margin-bottom: 14px; display: none; }
 
-  /* Spinner */
-  .spinner {
-    width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.3);
-    border-top-color: white; border-radius: 50%; animation: spin .8s linear infinite;
-  }
+  .spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.3); border-top-color: white; border-radius: 50%; animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Risultati */
+  /* Risultati — multi-selezione */
   .result-title { font-family: 'Cormorant Garamond',serif; font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
-  .result-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .result-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+
+  /* Contatore selezione */
+  .selection-counter {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--sand-dark); border-radius: 20px;
+    padding: 5px 14px; font-size: 12.5px; font-weight: 600;
+    color: var(--muted); margin-bottom: 14px;
+    transition: all .3s;
+  }
+  .selection-counter.has-selection { background: rgba(184,82,36,.12); color: var(--terra); }
+  .selection-counter.max-selection { background: rgba(74,124,89,.12); color: var(--success); }
+
   .apt-card {
     border: 1.5px solid var(--border); border-radius: 12px;
     padding: 14px 16px; margin-bottom: 10px; cursor: pointer;
     transition: all .2s; background: var(--sand);
     display: flex; align-items: center; gap: 14px;
   }
-  .apt-card:hover { border-color: var(--terra); background: white; }
+  .apt-card:hover:not(.disabled) { border-color: var(--terra); background: white; }
   .apt-card.selected { border-color: var(--terra); background: rgba(184,82,36,.05); box-shadow: 0 0 0 3px rgba(184,82,36,.12); }
-  .apt-icon {
-    width: 42px; height: 42px; background: linear-gradient(135deg,var(--sea),var(--sea-light));
-    border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    font-size: 18px; flex-shrink: 0;
-  }
+  .apt-card.disabled { opacity: .4; cursor: not-allowed; }
+  .apt-icon { width: 42px; height: 42px; background: linear-gradient(135deg,var(--sea),var(--sea-light)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
   .apt-info { flex: 1; }
   .apt-name { font-weight: 600; font-size: 14px; color: var(--ink); }
   .apt-desc { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
   .apt-link { font-size: 12px; color: var(--terra); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; }
-  .apt-radio { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 50%; flex-shrink: 0; transition: all .2s; display: flex; align-items: center; justify-content: center; }
-  .apt-radio.checked { border-color: var(--terra); background: var(--terra); }
-  .apt-radio.checked::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; }
 
-  /* Nessuna disponibilità */
+  /* Checkbox personalizzata */
+  .apt-checkbox {
+    width: 22px; height: 22px; border: 2px solid var(--border);
+    border-radius: 6px; flex-shrink: 0; transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: white;
+  }
+  .apt-checkbox.checked { border-color: var(--terra); background: var(--terra); }
+
   .no-avail { text-align: center; padding: 28px; background: var(--sand); border-radius: 12px; border: 1.5px solid var(--border); }
   .no-avail .emoji { font-size: 32px; margin-bottom: 10px; }
   .no-avail p { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-  /* Summary Step 2 */
-  .summary-box {
-    background: linear-gradient(135deg,var(--sea),var(--sea-light));
-    border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;
-    display: flex; align-items: center; gap: 14px; color: white;
-  }
-  .summary-text { font-size: 13px; line-height: 1.5; }
-  .summary-text strong { font-size: 14px; display: block; margin-bottom: 2px; }
+  /* Summary Step 2 — multi appartamento */
+  .summary-box { background: linear-gradient(135deg,var(--sea),var(--sea-light)); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; color: white; }
+  .summary-apt { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.2); }
+  .summary-apt:last-child { border-bottom: none; }
+  .summary-apt-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .summary-apt-text { font-size: 13px; line-height: 1.5; }
+  .summary-apt-text strong { font-size: 14px; display: block; }
+  .summary-dates { font-size: 12px; opacity: .85; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.2); }
 
-  /* Successo */
   .success-screen { text-align: center; padding: 32px 20px; }
-  .success-icon {
-    width: 72px; height: 72px; background: linear-gradient(135deg,var(--success),#5D9A70);
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 32px; margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(74,124,89,.3);
-  }
+  .success-icon { width: 72px; height: 72px; background: linear-gradient(135deg,var(--success),#5D9A70); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(74,124,89,.3); }
   .success-screen h2 { font-family: 'Cormorant Garamond',serif; font-size: 26px; color: var(--ink); margin-bottom: 8px; }
   .success-screen p { color: var(--muted); font-size: 14px; line-height: 1.7; }
   .success-new { max-width: 260px; margin: 20px auto 0; }
 
-  /* Privacy */
   .privacy-note { font-size: 11.5px; color: var(--muted); text-align: center; margin-top: 14px; line-height: 1.6; }
   .privacy-note a { color: var(--terra); }
 
-  /* Animazione */
   .panel { animation: slideIn .3s ease; }
   @keyframes slideIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
   @media(max-width:500px) {
-    .form-row, .form-row.triple { grid-template-columns: 1fr; }
+    .form-row, .form-row.triple, .form-row.quad { grid-template-columns: 1fr 1fr; }
     .card-body { padding: 20px; }
     .step-connector { width: 40px; }
   }
@@ -192,14 +167,12 @@
 <body>
 
 <div class="container">
-
   <div class="header">
     <div class="header-label">🏖️ Follonica Vacanze</div>
     <h1>Verifica disponibilità<br>& Richiedi preventivo</h1>
     <p>Appartamenti sul mare a Follonica, Maremma Toscana</p>
   </div>
 
-  <!-- Indicatore step -->
   <div class="steps">
     <div class="step-dot">
       <div class="step-circle active" id="dot1">1</div>
@@ -219,7 +192,7 @@
 
   <div class="card">
 
-    <!-- ═══ STEP 1 — Selezione date ═══ -->
+    <!-- ═══ STEP 1 ═══ -->
     <div id="step1">
       <div class="card-header">
         <div class="card-header-icon">📅</div>
@@ -240,7 +213,8 @@
             <input type="date" id="checkout">
           </div>
         </div>
-        <div class="form-row triple" style="margin-bottom:24px">
+
+        <div class="form-row triple" style="margin-bottom:20px">
           <div class="form-group">
             <label>Adulti</label>
             <div class="select-wrap">
@@ -252,7 +226,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Bambini (fino a 12 anni)</label>
+            <label>Bambini (≤12 anni)</label>
             <div class="select-wrap">
               <select id="bambini">
                 <option value="0">0</option>
@@ -261,6 +235,36 @@
             </div>
           </div>
         </div>
+
+        <!-- Sezione animali -->
+        <div class="pets-section">
+          <div class="pets-title">🐾 Animali domestici (opzionale)</div>
+          <div class="form-row triple" style="margin-bottom:12px">
+            <div class="form-group">
+              <label>Piccola taglia</label>
+              <div class="select-wrap">
+                <select id="animali-piccoli">
+                  <option value="0">0</option>
+                  <option>1</option><option>2</option><option>3</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Grande taglia</label>
+              <div class="select-wrap">
+                <select id="animali-grandi">
+                  <option value="0">0</option>
+                  <option>1</option><option>2</option><option>3</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" id="animali-tipo-group" style="display:none">
+            <label>Tipo di animali (specificare)</label>
+            <input type="text" id="animali-tipo" placeholder="Es. labrador + gatto soriano">
+          </div>
+        </div>
+
         <div class="error-msg" id="err1"></div>
         <button class="btn btn-primary" id="btnCheck" onclick="checkDisponibilita()">
           Verifica disponibilità
@@ -287,7 +291,7 @@
       </div>
     </div>
 
-    <!-- ═══ STEP 2 — Dati contatto ═══ -->
+    <!-- ═══ STEP 2 ═══ -->
     <div id="step2" style="display:none">
       <div class="card-header sea">
         <div class="card-header-icon">✉️</div>
@@ -323,7 +327,7 @@
           <input type="text" id="note" placeholder="Es. piano preferito, esigenze particolari...">
         </div>
         <div class="error-msg" id="err2"></div>
-        <button class="btn btn-primary" id="btnSend" onclick="inviaPrevntivo()">
+        <button class="btn btn-primary" id="btnSend" onclick="inviaPreventivo()">
           Invia richiesta preventivo
         </button>
         <button class="btn btn-secondary" onclick="backToRisultati()">← Torna agli appartamenti</button>
@@ -352,48 +356,50 @@
       </div>
     </div>
 
-  </div><!-- /card -->
-</div><!-- /container -->
+  </div>
+</div>
 
 <script>
-// ════════════════════════════════════════════════════
-// ✏️  UNICA RIGA DA MODIFICARE:
-//     incolla qui l'URL del tuo progetto su Vercel
-//     Es: 'https://follonica-vacanze.vercel.app'
-// ════════════════════════════════════════════════════
 const BACKEND = 'https://follonica-vacanze.vercel.app';
 
-// Emoji per tipo appartamento
-const EMOJI = {
-  'Bilocale':  '🌊',
-  'Trilocale': '⛵',
-};
+const EMOJI = { 'Bilocale': '🌊', 'Trilocale': '⛵' };
+const MAX_SELEZIONE = 2;
 
-let selectedApt = null;
-let searchParams = {};
+let selectedApts = [];   // array di max 2 appartamenti
+let searchParams  = {};
 
-// ─── Utilità date ───────────────────────────────────
-function isSabato(str) {
-  return new Date(str + 'T12:00:00').getDay() === 6;
-}
+// ─── Utilità date ─────────────────────────
+function isSabato(str) { return new Date(str + 'T12:00:00').getDay() === 6; }
 function formatDate(str) {
   return new Date(str + 'T12:00:00').toLocaleDateString('it-IT', {
     day: '2-digit', month: 'long', year: 'numeric'
   });
 }
 
-// ─── Imposta data minima (prossimo sabato) ──────────
+// ─── Data minima = prossimo sabato ────────
 window.addEventListener('DOMContentLoaded', () => {
   const oggi = new Date();
   const giorni = (6 - oggi.getDay() + 7) % 7 || 7;
-  const prossSab = new Date(oggi);
-  prossSab.setDate(oggi.getDate() + giorni);
-  const min = prossSab.toISOString().split('T')[0];
+  const ps = new Date(oggi);
+  ps.setDate(oggi.getDate() + giorni);
+  const min = ps.toISOString().split('T')[0];
   document.getElementById('checkin').min  = min;
   document.getElementById('checkout').min = min;
+
+  // Mostra campo tipo animali quando se ne seleziona almeno uno
+  ['animali-piccoli', 'animali-grandi'].forEach(id => {
+    document.getElementById(id).addEventListener('change', aggiornaAnimali);
+  });
 });
 
-// ─── Validazione date solo sabato ───────────────────
+function aggiornaAnimali() {
+  const piccoli = parseInt(document.getElementById('animali-piccoli').value) || 0;
+  const grandi  = parseInt(document.getElementById('animali-grandi').value)  || 0;
+  document.getElementById('animali-tipo-group').style.display =
+    (piccoli + grandi > 0) ? 'block' : 'none';
+}
+
+// ─── Validazione date solo sabato ─────────
 document.getElementById('checkin').addEventListener('change', function() {
   if (this.value && !isSabato(this.value)) {
     showErr('err1', '⚠️ La data di arrivo deve essere un sabato.');
@@ -401,9 +407,9 @@ document.getElementById('checkin').addEventListener('change', function() {
   } else {
     hideErr('err1');
     if (this.value) {
-      const nextSab = new Date(this.value + 'T12:00:00');
-      nextSab.setDate(nextSab.getDate() + 7);
-      document.getElementById('checkout').min = nextSab.toISOString().split('T')[0];
+      const ns = new Date(this.value + 'T12:00:00');
+      ns.setDate(ns.getDate() + 7);
+      document.getElementById('checkout').min = ns.toISOString().split('T')[0];
       document.getElementById('checkout').value = '';
     }
   }
@@ -415,7 +421,7 @@ document.getElementById('checkout').addEventListener('change', function() {
   } else hideErr('err1');
 });
 
-// ─── Step 1 — Verifica disponibilità ───────────────
+// ─── Step 1 — Verifica disponibilità ──────
 async function checkDisponibilita() {
   const checkin  = document.getElementById('checkin').value;
   const checkout = document.getElementById('checkout').value;
@@ -424,37 +430,42 @@ async function checkDisponibilita() {
 
   if (!checkin || !checkout) return showErr('err1', '⚠️ Seleziona le date di arrivo e partenza.');
   if (!adulti)               return showErr('err1', '⚠️ Seleziona il numero di adulti.');
-  if (!isSabato(checkin) || !isSabato(checkout))
-                             return showErr('err1', '⚠️ Entrambe le date devono essere sabati.');
+  if (!isSabato(checkin) || !isSabato(checkout)) return showErr('err1', '⚠️ Entrambe le date devono essere sabati.');
   hideErr('err1');
 
-  const ospiti = parseInt(adulti) + parseInt(bambini || 0);
-  searchParams  = { checkin, checkout, adulti: parseInt(adulti), bambini: parseInt(bambini || 0), ospiti };
+  const piccoli = parseInt(document.getElementById('animali-piccoli').value) || 0;
+  const grandi  = parseInt(document.getElementById('animali-grandi').value)  || 0;
+  const tipoAnimali = document.getElementById('animali-tipo').value.trim();
+  const ospiti  = parseInt(adulti) + parseInt(bambini || 0);
+
+  searchParams = {
+    checkin, checkout,
+    adulti: parseInt(adulti), bambini: parseInt(bambini || 0), ospiti,
+    animali: { piccoli, grandi, tipo: tipoAnimali }
+  };
 
   setLoading('btnCheck', true, 'Verifica in corso...');
+  selectedApts = [];
 
   try {
     const res  = await fetch(`${BACKEND}/api/check_availability`, {
-      method:  'POST',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ checkin, checkout, ospiti }),
+      body: JSON.stringify({ checkin, checkout, ospiti }),
     });
     const data = await res.json();
-
     if (!res.ok) throw new Error(data.error || 'Errore del server');
-
     mostraRisultati(data.disponibili);
-
-  } catch (e) {
-    showErr('err1', `⚠️ Errore di connessione: ${e.message}. Riprova o contattaci.`);
+  } catch(e) {
+    showErr('err1', `⚠️ Errore: ${e.message}. Riprova o contattaci.`);
   } finally {
     setLoading('btnCheck', false, 'Verifica disponibilità');
   }
 }
 
 function mostraRisultati(disponibili) {
-  document.getElementById('step1').style.display   = 'none';
-  document.getElementById('step1b').style.display  = 'block';
+  document.getElementById('step1').style.display  = 'none';
+  document.getElementById('step1b').style.display = 'block';
   document.getElementById('period-label').textContent =
     `dal ${formatDate(searchParams.checkin)} al ${formatDate(searchParams.checkout)}`;
 
@@ -468,53 +479,103 @@ function mostraRisultati(disponibili) {
         Prova con date diverse oppure contattaci direttamente:<br>
         <strong>📞 338 2233166</strong></p>
       </div>`;
-  } else {
-    box.innerHTML = `
-      <div class="result-title">🎉 ${disponibili.length} ${disponibili.length === 1 ? 'appartamento disponibile' : 'appartamenti disponibili'}</div>
-      <div class="result-subtitle">Seleziona quello di tuo interesse per richiedere il preventivo</div>
-      ${disponibili.map(a => `
-        <div class="apt-card" onclick="selectApt(${JSON.stringify(a).replace(/"/g,'&quot;')})" id="card-${a.id}">
-          <div class="apt-icon">${EMOJI[a.tipo] || '🏡'}</div>
-          <div class="apt-info">
-            <div class="apt-name">${a.nome}</div>
-            <div class="apt-desc">${a.caratteristiche} · Max ${a.capacita} ospiti</div>
-            <a href="${a.url}" target="_blank" class="apt-link" onclick="event.stopPropagation()">
-              Vedi foto e dettagli ↗
-            </a>
-          </div>
-          <div class="apt-radio" id="radio-${a.id}"></div>
-        </div>`).join('')}`;
+    return;
   }
+
+  box.innerHTML = `
+    <div class="result-title">🎉 ${disponibili.length} ${disponibili.length === 1 ? 'appartamento disponibile' : 'appartamenti disponibili'}</div>
+    <div class="result-subtitle">Puoi selezionare fino a ${MAX_SELEZIONE} appartamenti per richiedere il preventivo</div>
+    <div class="selection-counter" id="counter">0 / ${MAX_SELEZIONE} selezionati</div>
+    ${disponibili.map(a => `
+      <div class="apt-card" onclick="toggleApt(${JSON.stringify(a).replace(/"/g,'&quot;')})" id="card-${a.id}">
+        <div class="apt-icon">${EMOJI[a.tipo] || '🏡'}</div>
+        <div class="apt-info">
+          <div class="apt-name">${a.nome}</div>
+          <div class="apt-desc">${a.caratteristiche} · Max ${a.capacita} ospiti</div>
+          <a href="${a.url}" target="_blank" class="apt-link" onclick="event.stopPropagation()">
+            Vedi foto e dettagli ↗
+          </a>
+        </div>
+        <div class="apt-checkbox" id="chk-${a.id}"></div>
+      </div>`).join('')}`;
 }
 
-function selectApt(apt) {
-  document.querySelectorAll('.apt-card').forEach(c  => c.classList.remove('selected'));
-  document.querySelectorAll('.apt-radio').forEach(r => r.classList.remove('checked'));
-  document.getElementById('card-'  + apt.id).classList.add('selected');
-  document.getElementById('radio-' + apt.id).classList.add('checked');
-  selectedApt = apt;
+function toggleApt(apt) {
+  const idx = selectedApts.findIndex(a => a.id === apt.id);
+
+  if (idx >= 0) {
+    // Deseleziona
+    selectedApts.splice(idx, 1);
+    document.getElementById('card-' + apt.id).classList.remove('selected');
+    document.getElementById('chk-'  + apt.id).classList.remove('checked');
+    document.getElementById('chk-'  + apt.id).textContent = '';
+  } else {
+    // Seleziona (max 2)
+    if (selectedApts.length >= MAX_SELEZIONE) return;
+    selectedApts.push(apt);
+    document.getElementById('card-' + apt.id).classList.add('selected');
+    const chk = document.getElementById('chk-' + apt.id);
+    chk.classList.add('checked');
+    chk.textContent = '✓';
+  }
+
+  // Aggiorna counter e stato card disabilitate
+  aggiornaCounter();
   hideErr('err1b');
 }
 
+function aggiornaCounter() {
+  const n       = selectedApts.length;
+  const counter = document.getElementById('counter');
+  if (!counter) return;
+  counter.textContent = `${n} / ${MAX_SELEZIONE} selezionati`;
+  counter.className   = 'selection-counter' +
+    (n === 0 ? '' : n < MAX_SELEZIONE ? ' has-selection' : ' max-selection');
+
+  // Disabilita le card non selezionate quando si raggiunge il massimo
+  document.querySelectorAll('.apt-card').forEach(card => {
+    const id = card.id.replace('card-', '');
+    const isSelected = selectedApts.some(a => a.id === id);
+    if (n >= MAX_SELEZIONE && !isSelected) {
+      card.classList.add('disabled');
+    } else {
+      card.classList.remove('disabled');
+    }
+  });
+}
+
 function goStep2() {
-  if (!selectedApt) return showErr('err1b', '⚠️ Seleziona un appartamento per continuare.');
+  if (selectedApts.length === 0) return showErr('err1b', '⚠️ Seleziona almeno un appartamento per continuare.');
   setStep(2);
   document.getElementById('step1b').style.display = 'none';
   document.getElementById('step2').style.display  = 'block';
+
+  // Summary box con tutti gli appartamenti selezionati
+  const { checkin, checkout, adulti, bambini, animali } = searchParams;
+  const animaliStr = animali && (animali.piccoli + animali.grandi) > 0
+    ? `🐾 ${animali.piccoli > 0 ? animali.piccoli + ' piccola taglia' : ''}${animali.piccoli > 0 && animali.grandi > 0 ? ', ' : ''}${animali.grandi > 0 ? animali.grandi + ' grande taglia' : ''}${animali.tipo ? ` (${animali.tipo})` : ''}`
+    : '';
+
   document.getElementById('summaryBox').innerHTML = `
-    <div style="font-size:22px">🏡</div>
-    <div class="summary-text">
-      <strong>${selectedApt.nome}</strong>
-      📅 ${formatDate(searchParams.checkin)} → ${formatDate(searchParams.checkout)}
-      &nbsp;·&nbsp; 👥 ${searchParams.adulti} adulti${searchParams.bambini > 0 ? ', ' + searchParams.bambini + ' bambini' : ''}
+    ${selectedApts.map(a => `
+      <div class="summary-apt">
+        <div class="summary-apt-icon">${EMOJI[a.tipo] || '🏡'}</div>
+        <div class="summary-apt-text">
+          <strong>${a.nome}</strong>
+          ${a.caratteristiche}
+        </div>
+      </div>`).join('')}
+    <div class="summary-dates">
+      📅 ${formatDate(checkin)} → ${formatDate(checkout)}
+      &nbsp;·&nbsp; 👥 ${adulti} adulti${bambini > 0 ? ', ' + bambini + ' bambini' : ''}
+      ${animaliStr ? `<br>${animaliStr}` : ''}
     </div>`;
 }
 
 function resetStep1() {
   document.getElementById('step1b').style.display = 'none';
   document.getElementById('step1').style.display  = 'block';
-  selectedApt = null;
-  setStep(1);
+  selectedApts = []; setStep(1);
 }
 function backToRisultati() {
   document.getElementById('step2').style.display  = 'none';
@@ -522,8 +583,8 @@ function backToRisultati() {
   setStep(1);
 }
 
-// ─── Step 2 — Invio preventivo ──────────────────────
-async function inviaPrevntivo() {
+// ─── Step 2 — Invio preventivo ────────────
+async function inviaPreventivo() {
   const nome     = document.getElementById('nome').value.trim();
   const cognome  = document.getElementById('cognome').value.trim();
   const email    = document.getElementById('email').value.trim();
@@ -539,12 +600,12 @@ async function inviaPrevntivo() {
   setLoading('btnSend', true, 'Invio in corso...');
 
   try {
-    const res  = await fetch(`${BACKEND}/api/send_quote`, {
-      method:  'POST',
+    const res = await fetch(`${BACKEND}/api/send_quote`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({
+      body: JSON.stringify({
         nome, cognome, email, telefono, note,
-        appartamento: selectedApt,
+        appartamenti: selectedApts,   // array di max 2
         ...searchParams,
       }),
     });
@@ -556,8 +617,7 @@ async function inviaPrevntivo() {
     document.getElementById('step3').style.display = 'block';
     document.getElementById('nomeConferma').textContent  = nome;
     document.getElementById('emailConferma').textContent = email;
-
-  } catch (e) {
+  } catch(e) {
     showErr('err2', `⚠️ ${e.message}`);
   } finally {
     setLoading('btnSend', false, 'Invia richiesta preventivo');
@@ -565,42 +625,37 @@ async function inviaPrevntivo() {
 }
 
 function nuovaRicerca() {
-  ['checkin','checkout','nome','cognome','email','telefono','note'].forEach(id => {
+  ['checkin','checkout','nome','cognome','email','telefono','note','animali-tipo'].forEach(id => {
     document.getElementById(id).value = '';
   });
-  document.getElementById('adulti').value  = '';
+  document.getElementById('adulti').value = '';
   document.getElementById('bambini').value = '0';
-  selectedApt = null; searchParams = {};
+  document.getElementById('animali-piccoli').value = '0';
+  document.getElementById('animali-grandi').value  = '0';
+  document.getElementById('animali-tipo-group').style.display = 'none';
+  selectedApts = []; searchParams = {};
   document.getElementById('step3').style.display = 'none';
   document.getElementById('step1').style.display = 'block';
   setStep(1);
 }
 
-// ─── Utilità UI ─────────────────────────────────────
+// ─── Utilità UI ───────────────────────────
 function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block'; }
 function hideErr(id)       { document.getElementById(id).style.display = 'none'; }
-
 function setLoading(btnId, loading, label) {
   const btn = document.getElementById(btnId);
   btn.disabled = loading;
-  btn.innerHTML = loading
-    ? `<div class="spinner"></div> ${label}`
-    : label;
+  btn.innerHTML = loading ? `<div class="spinner"></div> ${label}` : label;
 }
-
 function setStep(n) {
   [1,2,3].forEach(i => {
-    document.getElementById('dot' + i).className =
-      'step-circle ' + (i < n ? 'done' : i === n ? 'active' : 'inactive');
-    document.getElementById('lbl' + i).className =
-      'step-label' + (i === n ? ' active' : '');
+    document.getElementById('dot'+i).className = 'step-circle ' + (i < n ? 'done' : i === n ? 'active' : 'inactive');
+    document.getElementById('lbl'+i).className = 'step-label'   + (i === n ? ' active' : '');
   });
   [1,2].forEach(i => {
-    document.getElementById('conn' + i).className =
-      'step-connector' + (i < n ? ' done' : '');
+    document.getElementById('conn'+i).className = 'step-connector' + (i < n ? ' done' : '');
   });
 }
 </script>
-
 </body>
 </html>
