@@ -322,9 +322,9 @@ class handler(BaseHTTPRequestHandler):
         if ok1 and ok2:
             return self._json_response(200, {'success': True})
         else:
-            print(f"[Email] Errore owner: {err1} | Errore cliente: {err2}")
+            # Debug temporaneo — rimuovi dopo aver risolto
             return self._json_response(500, {
-                'error': 'Errore durante l\'invio. Contattaci al 338 2233166.'
+                'error': f'Errore owner: {err1} | Errore cliente: {err2}'
             })
 
     def log_message(self, format, *args):
