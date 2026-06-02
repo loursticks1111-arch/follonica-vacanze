@@ -1,16 +1,12 @@
 # api/send_quote.py
 # Vercel Serverless Function — Python
-#
-# Riceve i dati del form e invia due email via Resend:
-#   1. Notifica al proprietario con tutti i dati della richiesta
-#   2. Conferma automatica al cliente con riepilogo
+# Usa l'SDK ufficiale Resend per evitare blocchi Cloudflare
 
 from http.server import BaseHTTPRequestHandler
 import json
 import os
-import urllib.request
-import urllib.error
 from datetime import date
+import resend
 
 # ─────────────────────────────────────────────
 # CONFIGURAZIONE
@@ -19,7 +15,7 @@ from datetime import date
 def config() -> dict:
     return {
         'owner_email':  os.environ.get('OWNER_EMAIL',  'info@follonicavacanze.com'),
-        'from_address': os.environ.get('FROM_ADDRESS', 'noreply@follonicavacanze.com'),
+        'from_address': os.environ.get('FROM_ADDRESS', 'onboarding@resend.dev'),
         'resend_key':   os.environ.get('RESEND_API_KEY', ''),
         'phone':        '338 2233166',
         'site':         'FollonicaVacanze.com',
@@ -52,10 +48,8 @@ def email_proprietario(p: dict, cfg: dict) -> str:
     ospiti = int(p['adulti']) + int(p.get('bambini', 0))
     bambini_str = f" + {p['bambini']} bambini" if int(p.get('bambini', 0)) > 0 else ""
     note_row = f"""
-        <div class="info-row">
-          <span>Note</span>
-          <span style="font-style:italic">{p.get('note','')}</span>
-        </div>""" if p.get('note') else ''
+        <div class="row"><span>Note</span>
+        <span style="font-style:italic">{p.get('note','')}</span></div>""" if p.get('note') else ''
 
     return f"""<!DOCTYPE html>
 <html lang="it"><head><meta charset="UTF-8">
@@ -175,8 +169,7 @@ def email_cliente(p: dict, cfg: dict) -> str:
     <p style="font-size:15px;color:#1C1812;line-height:1.7">
       Abbiamo ricevuto la tua richiesta di preventivo per
       <strong>{p['appartamento'].get('nome','')}</strong>.
-      Ti contatteremo presto all'indirizzo <strong>{p['email']}</strong>
-      con tutti i dettagli.
+      Ti contatteremo presto all'indirizzo <strong>{p['email']}</strong>.
     </p>
     <div class="summary">
       <div style="font-weight:700;font-size:15px;color:#B85224;margin-bottom:12px">
@@ -214,35 +207,32 @@ def email_cliente(p: dict, cfg: dict) -> str:
 
 
 # ─────────────────────────────────────────────
-# INVIO EMAIL via Resend
+# INVIO EMAIL via SDK Resend ufficiale
 # ─────────────────────────────────────────────
 
-def send_email(api_key: str, from_addr: str,
-               to: str, subject: str, html: str) -> tuple[bool, str]:
-    payload = json.dumps({
-        'from': from_addr,
-        'to':   [to],
-        'subject': subject,
-        'html': html,
-    }).encode('utf-8')
-
-    req = urllib.request.Request(
-        'https://api.resend.com/emails',
-        data=payload,
-        headers={
-            'Content-Type':  'application/json',
-            'Authorization': f'Bearer {api_key}',
-        },
-        method='POST'
-    )
-
+def send_emails(p: dict, cfg: dict) -> tuple[bool, str]:
+    """Invia le due email usando l'SDK ufficiale Resend."""
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return True, resp.read().decode()
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode()
-        print(f"[Resend] HTTP {e.code}: {error_body}")  # ← appare nei log Vercel
-        return False, error_body
+        resend.api_key = cfg['resend_key']
+
+        # Email al proprietario
+        resend.Emails.send({
+            "from":    cfg['from_address'],
+            "to":      [cfg['owner_email']],
+            "subject": f"🏡 Nuova richiesta preventivo — {p['appartamento'].get('nome','')}",
+            "html":    email_proprietario(p, cfg),
+        })
+
+        # Email di conferma al cliente
+        resend.Emails.send({
+            "from":    cfg['from_address'],
+            "to":      [p['email']],
+            "subject": f"✅ Richiesta ricevuta — {cfg['site']}",
+            "html":    email_cliente(p, cfg),
+        })
+
+        return True, "ok"
+
     except Exception as e:
         return False, str(e)
 
@@ -272,14 +262,12 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
-        # Leggi e valida il body
         try:
             length = int(self.headers.get('Content-Length', 0))
             body   = json.loads(self.rfile.read(length))
         except (json.JSONDecodeError, ValueError):
             return self._json_response(400, {'error': 'Body JSON non valido'})
 
-        # Campi obbligatori
         required = ['nome', 'cognome', 'email', 'telefono',
                     'appartamento', 'checkin', 'checkout', 'adulti']
         missing  = [f for f in required if not body.get(f)]
@@ -288,44 +276,21 @@ class handler(BaseHTTPRequestHandler):
                 'error': f"Campi obbligatori mancanti: {', '.join(missing)}"
             })
 
-        # Validazione email
-        email = body['email']
-        if '@' not in email or '.' not in email.split('@')[-1]:
-            return self._json_response(400, {'error': 'Indirizzo email non valido'})
+        if '@' not in body['email'] or '.' not in body['email'].split('@')[-1]:
+            return self._json_response(400, {'error': 'Email non valida'})
 
         cfg = config()
         if not cfg['resend_key']:
             return self._json_response(500, {'error': 'RESEND_API_KEY non configurata'})
 
-        # Prepara il payload completo
         p = {**body, 'bambini': body.get('bambini', 0), 'note': body.get('note', '')}
 
-        # Invia le due email
-        apt_nome = p['appartamento'].get('nome', p['appartamento'].get('id', ''))
+        ok, err = send_emails(p, cfg)
 
-        ok1, err1 = send_email(
-            cfg['resend_key'],
-            cfg['from_address'],
-            cfg['owner_email'],
-            f"🏡 Nuova richiesta preventivo — {apt_nome}",
-            email_proprietario(p, cfg)
-        )
-
-        ok2, err2 = send_email(
-            cfg['resend_key'],
-            cfg['from_address'],
-            email,
-            f"✅ Richiesta ricevuta — {cfg['site']}",
-            email_cliente(p, cfg)
-        )
-
-        if ok1 and ok2:
+        if ok:
             return self._json_response(200, {'success': True})
         else:
-            # Debug temporaneo — rimuovi dopo aver risolto
-            return self._json_response(500, {
-                'error': f'Errore owner: {err1} | Errore cliente: {err2}'
-            })
+            return self._json_response(500, {'error': f'Errore invio: {err}'})
 
     def log_message(self, format, *args):
-        pass  # silenzia i log HTTP di default
+        pass
