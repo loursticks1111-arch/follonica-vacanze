@@ -290,7 +290,7 @@ class handler(BaseHTTPRequestHandler):
         if ok:
             return self._json_response(200, {'success': True})
         else:
-            return self._json_response(500, {'error': f'Errore invio: {err}'})
+            return self._json_response(500, {'error': 'Errore durante l\'invio. Contattaci al 338 2233166.'})
 
     def log_message(self, format, *args):
         pass
