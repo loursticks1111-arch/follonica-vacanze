@@ -20,3 +20,8 @@ venv/
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Other files
+
+Recovery_codes_Vercel.txt
+DNS - Resend.docx
