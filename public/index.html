@@ -57,10 +57,11 @@
     border-radius: 10px; font-family: 'DM Sans',sans-serif;
     font-size: 14px; color: var(--ink); background: var(--sand); transition: all .2s; appearance: none;
   }
-  .form-group input:focus, .form-group select:focus {
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     outline: none; border-color: var(--terra); background: white;
     box-shadow: 0 0 0 3px rgba(184,82,36,.1);
   }
+  .form-group textarea::placeholder { color: #BBA98E; }
   .form-group input::placeholder { color: #BBA98E; }
   .select-wrap { position: relative; }
   .select-wrap::after { content: '▾'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 12px; }
@@ -238,7 +239,7 @@
 
         <!-- Sezione animali -->
         <div class="pets-section">
-          <div class="pets-title">🐾 Animali domestici (opzionale)</div>
+          <div class="pets-title">🐾 Animali domestici</div>
           <div class="form-row triple" style="margin-bottom:12px">
             <div class="form-group">
               <label>Piccola taglia</label>
@@ -324,7 +325,11 @@
         </div>
         <div class="form-group" style="margin-bottom:20px">
           <label>Note aggiuntive</label>
-          <input type="text" id="note" placeholder="Es. piano preferito, esigenze particolari...">
+          <textarea id="note" rows="5" placeholder="Es. piano preferito, esigenze particolari..."
+            style="width:100%;padding:12px 14px;border:1.5px solid var(--border);
+                   border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;
+                   color:var(--ink);background:var(--sand);transition:all .2s;
+                   resize:vertical;line-height:1.6"></textarea>
         </div>
         <div class="error-msg" id="err2"></div>
         <button class="btn btn-primary" id="btnSend" onclick="inviaPreventivo()">

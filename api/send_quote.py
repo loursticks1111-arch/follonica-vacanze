@@ -50,34 +50,32 @@ def build_animali_str(animali):
     return s
 
 
+# ── Riga etichetta/valore compatibile con tutti i client email ──
+# Usa una mini-tabella invece di flexbox (non supportato da Gmail/Outlook)
+def row(label, value):
+    return (
+        '<table width="100%%" cellpadding="0" cellspacing="0" style="margin:4px 0;border-bottom:1px solid #E8DDD0">'
+        '<tr>'
+        '<td style="font-size:14px;color:#7A6E63;padding:6px 12px 6px 0;width:110px;vertical-align:top">%s</td>'
+        '<td style="font-size:14px;color:#1C1812;font-weight:600;padding:6px 0;vertical-align:top">%s</td>'
+        '</tr></table>'
+    ) % (label, value)
+
+
 def build_apt_rows_proprietario(appartamenti):
     rows = []
     for a in appartamenti:
-        apt_id  = a.get('id', '').upper()
-        nome    = a.get('nome', '')
-        url     = a.get('url', '')
-        row = (
-            '<div class="row">'
-            '<span>%s</span>'
-            '<span style="text-align:right">%s<br>'
-            '<a href="%s" style="font-size:12px;color:#B85224">Vedi pagina &rarr;</a>'
-            '</span></div>'
-        ) % (apt_id, nome, url)
-        rows.append(row)
+        apt_id = a.get('id', '').upper()
+        nome   = a.get('nome', '')
+        url    = a.get('url', '')
+        rows.append(row(apt_id, '%s &nbsp;<a href="%s" style="font-size:12px;color:#B85224">Vedi pagina &rarr;</a>' % (nome, url)))
     return ''.join(rows)
 
 
 def build_apt_rows_cliente(appartamenti):
     rows = []
     for a in appartamenti:
-        nome = a.get('nome', '')
-        row = (
-            '<div class="row">'
-            '<span class="lbl">&#127968; Appart.</span>'
-            '<span class="val">%s</span>'
-            '</div>'
-        ) % nome
-        rows.append(row)
+        rows.append(row('Appartamento', a.get('nome', '')))
     return ''.join(rows)
 
 
@@ -87,9 +85,11 @@ def build_apt_cta_buttons(appartamenti):
         nome = a.get('nome', '')
         url  = a.get('url', '')
         btn = (
-            '<div class="cta">'
-            '<a class="btn" href="%s">Vedi foto %s &rarr;</a>'
-            '</div>'
+            '<div style="text-align:center;margin:10px 0">'
+            '<a href="%s" style="display:inline-block;background:#B85224;'
+            'color:white !important;text-decoration:none;padding:13px 30px;'
+            'border-radius:10px;font-weight:600;font-size:14px;font-family:Arial,sans-serif">'
+            'Vedi foto %s &rarr;</a></div>'
         ) % (url, nome)
         buttons.append(btn)
     return ''.join(buttons)
@@ -100,68 +100,77 @@ def email_proprietario(p, cfg):
     ospiti      = int(p['adulti']) + int(p.get('bambini', 0))
     bambini_str = (' + %s bambini' % p['bambini']) if int(p.get('bambini', 0)) > 0 else ''
     anim_str    = build_animali_str(p.get('animali'))
-    anim_row    = ''
-    if anim_str:
-        anim_row = '<div class="row"><span>Animali</span><span>%s</span></div>' % anim_str
-    note_row = ''
-    if p.get('note'):
-        note_row = '<div class="row"><span>Note</span><span style="font-style:italic">%s</span></div>' % p['note']
+    anim_row    = row('Animali', anim_str) if anim_str else ''
+    note_row    = row('Note', '<span style="font-style:italic">%s</span>' % p['note']) if p.get('note') else ''
+    settimane   = notti // 7
+    sett_label  = 'settimana' if settimane == 1 else 'settimane'
 
     appartamenti = p.get('appartamenti', [])
     n_apt        = len(appartamenti)
     apt_label    = '%d appartamento richiesto' % n_apt if n_apt == 1 else '%d appartamenti richiesti' % n_apt
     apt_rows     = build_apt_rows_proprietario(appartamenti)
-    settimane    = notti // 7
-    sett_label   = 'settimana' if settimane == 1 else 'settimane'
 
     html = """<!DOCTYPE html>
-<html lang="it"><head><meta charset="UTF-8">
-<style>
-body{font-family:Arial,sans-serif;background:#F5EFE4;margin:0;padding:20px}
-.card{background:white;max-width:600px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
-.hdr{background:linear-gradient(135deg,#8B3A10,#B85224);padding:28px 32px;color:white}
-.hdr h1{margin:0;font-size:22px}.hdr p{margin:6px 0 0;opacity:.8;font-size:14px}
-.body{padding:28px 32px}
-.section{margin-bottom:22px}
-.section h2{color:#2C6B7A;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:0 0 10px}
-.box{background:#F5EFE4;border-radius:10px;padding:16px;border-left:4px solid #B85224}
-.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8DDD0;font-size:14px}
-.row:last-child{border-bottom:none}
-.row span:first-child{color:#7A6E63;min-width:90px}.row span:last-child{font-weight:600}
-.btn{display:inline-block;background:#B85224;color:white;padding:13px 30px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px}
-.footer{background:#F5EFE4;padding:14px 32px;font-size:12px;color:#7A6E63;text-align:center}
-a{color:#B85224}
-</style></head><body>
-<div class="card">
-<div class="hdr"><h1>&#127968; Nuova richiesta di preventivo</h1><p>%(site)s &mdash; ricevuta ora</p></div>
-<div class="body">
-<div class="section"><h2>%(apt_label)s</h2><div class="box">%(apt_rows)s</div></div>
-<div class="section"><h2>Periodo e ospiti</h2><div class="box">
-<div class="row"><span>Arrivo</span><span>%(checkin)s</span></div>
-<div class="row"><span>Partenza</span><span>%(checkout)s</span></div>
-<div class="row"><span>Durata</span><span>%(notti)d notti (%(settimane)d %(sett_label)s)</span></div>
-<div class="row"><span>Ospiti</span><span>%(adulti)s adulti%(bambini_str)s (tot. %(ospiti)d)</span></div>
-%(anim_row)s
-</div></div>
-<div class="section"><h2>Dati cliente</h2><div class="box">
-<div class="row"><span>Nome</span><span>%(nome)s %(cognome)s</span></div>
-<div class="row"><span>Email</span><span><a href="mailto:%(email)s">%(email)s</a></span></div>
-<div class="row"><span>Telefono</span><span>%(telefono)s</span></div>
-%(note_row)s
-</div></div>
-<p style="text-align:center;margin-top:8px">
-<a class="btn" href="mailto:%(email)s?subject=Preventivo - %(site)s">Rispondi al cliente &rarr;</a>
-</p>
+<html lang="it"><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;background:#F5EFE4;margin:0;padding:20px">
+<div style="background:white;max-width:600px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)">
+
+  <div style="background:linear-gradient(135deg,#8B3A10,#B85224);padding:28px 32px;color:white">
+    <h1 style="margin:0;font-size:22px">&#127968; Nuova richiesta di preventivo</h1>
+    <p style="margin:6px 0 0;opacity:.8;font-size:14px">%(site)s &mdash; ricevuta ora</p>
+  </div>
+
+  <div style="padding:28px 32px">
+
+    <h2 style="color:#2C6B7A;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:0 0 10px">%(apt_label)s</h2>
+    <div style="background:#F5EFE4;border-radius:10px;padding:16px;border-left:4px solid #B85224;margin-bottom:22px">
+      %(apt_rows)s
+    </div>
+
+    <h2 style="color:#2C6B7A;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:0 0 10px">Periodo e ospiti</h2>
+    <div style="background:#F5EFE4;border-radius:10px;padding:16px;border-left:4px solid #B85224;margin-bottom:22px">
+      %(row_arrivo)s
+      %(row_partenza)s
+      %(row_durata)s
+      %(row_ospiti)s
+      %(anim_row)s
+    </div>
+
+    <h2 style="color:#2C6B7A;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:0 0 10px">Dati cliente</h2>
+    <div style="background:#F5EFE4;border-radius:10px;padding:16px;border-left:4px solid #B85224;margin-bottom:22px">
+      %(row_nome)s
+      %(row_email)s
+      %(row_telefono)s
+      %(note_row)s
+    </div>
+
+    <div style="text-align:center;margin-top:8px">
+      <a href="mailto:%(email)s?subject=Preventivo - %(site)s"
+         style="display:inline-block;background:#B85224;color:white !important;
+                text-decoration:none;padding:13px 30px;border-radius:8px;
+                font-weight:600;font-size:14px;font-family:Arial,sans-serif">
+        Rispondi al cliente &rarr;
+      </a>
+    </div>
+
+  </div>
+  <div style="background:#F5EFE4;padding:14px 32px;font-size:12px;color:#7A6E63;text-align:center">
+    %(site)s &middot; Messaggio automatico
+  </div>
 </div>
-<div class="footer">%(site)s &middot; Messaggio automatico</div>
-</div></body></html>""" % {
-        'site': cfg['site'], 'apt_label': apt_label, 'apt_rows': apt_rows,
-        'checkin': format_date(p['checkin']), 'checkout': format_date(p['checkout']),
-        'notti': notti, 'settimane': settimane, 'sett_label': sett_label,
-        'adulti': p['adulti'], 'bambini_str': bambini_str, 'ospiti': ospiti,
-        'anim_row': anim_row, 'note_row': note_row,
-        'nome': p['nome'], 'cognome': p['cognome'],
-        'email': p['email'], 'telefono': p['telefono'],
+</body></html>""" % {
+        'site':        cfg['site'],
+        'apt_label':   apt_label,
+        'apt_rows':    apt_rows,
+        'row_arrivo':  row('Arrivo',   format_date(p['checkin'])),
+        'row_partenza':row('Partenza', format_date(p['checkout'])),
+        'row_durata':  row('Durata',   '%d notti (%d %s)' % (notti, settimane, sett_label)),
+        'row_ospiti':  row('Ospiti',   '%s adulti%s (tot. %d)' % (p['adulti'], bambini_str, ospiti)),
+        'anim_row':    anim_row,
+        'row_nome':    row('Nome',     '%s %s' % (p['nome'], p['cognome'])),
+        'row_email':   row('Email',    '<a href="mailto:%(e)s" style="color:#B85224">%(e)s</a>' % {'e': p['email']}),
+        'row_telefono':row('Telefono', p['telefono']),
+        'note_row':    note_row,
+        'email':       p['email'],
     }
     return html
 
@@ -170,63 +179,64 @@ def email_cliente(p, cfg):
     notti       = calc_notti(p['checkin'], p['checkout'])
     bambini_str = (' + %s bambini' % p['bambini']) if int(p.get('bambini', 0)) > 0 else ''
     anim_str    = build_animali_str(p.get('animali'))
-    anim_row    = ''
-    if anim_str:
-        anim_row = '<div class="row"><span class="lbl">&#128062; Animali</span><span class="val">%s</span></div>' % anim_str
-
+    anim_row    = row('&#128062; Animali', anim_str) if anim_str else ''
     apt_rows    = build_apt_rows_cliente(p.get('appartamenti', []))
     apt_buttons = build_apt_cta_buttons(p.get('appartamenti', []))
 
     html = """<!DOCTYPE html>
-<html lang="it"><head><meta charset="UTF-8">
-<style>
-body{font-family:Arial,sans-serif;background:#F5EFE4;margin:0;padding:20px}
-.card{background:white;max-width:600px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
-.hdr{background:linear-gradient(135deg,#8B3A10,#B85224);padding:28px 32px;color:white;text-align:center}
-.hdr .icon{font-size:48px;margin-bottom:10px}
-.hdr h1{margin:0;font-size:22px}.hdr p{margin:8px 0 0;opacity:.85;font-size:15px}
-.body{padding:28px 32px}
-.summary{background:linear-gradient(135deg,#F5EFE4,#EDE2D4);border-radius:12px;padding:20px;border-left:4px solid #B85224;margin-bottom:22px}
-.row{display:flex;gap:10px;padding:6px 0;font-size:14px}
-.lbl{color:#7A6E63;min-width:90px}.val{font-weight:600;color:#1C1812}
-.cta{text-align:center;margin:12px 0}
-.btn{display:inline-block;background:#B85224;color:white;padding:13px 30px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px}
-.contact{background:#F0F7F9;border-radius:10px;padding:16px 20px;border-left:4px solid #2C6B7A}
-.footer{background:#F5EFE4;padding:14px 32px;font-size:12px;color:#7A6E63;text-align:center;border-top:1px solid #E8DDD0}
-a{color:#B85224}
-</style></head><body>
-<div class="card">
-<div class="hdr"><div class="icon">&#9989;</div><h1>Richiesta ricevuta!</h1>
-<p>Grazie %(nome)s, ti risponderemo entro poche ore</p></div>
-<div class="body">
-<p style="font-size:15px;color:#1C1812;line-height:1.7">
-Abbiamo ricevuto la tua richiesta di preventivo.
-Ti contatteremo presto all'indirizzo <strong>%(email)s</strong>.
-</p>
-<div class="summary">
-<div style="font-weight:700;font-size:15px;color:#B85224;margin-bottom:12px">&#128203; Riepilogo</div>
-%(apt_rows)s
-<div class="row"><span class="lbl">&#128197; Arrivo</span><span class="val">%(checkin)s</span></div>
-<div class="row"><span class="lbl">&#128197; Partenza</span><span class="val">%(checkout)s</span></div>
-<div class="row"><span class="lbl">&#127769; Durata</span><span class="val">%(notti)d notti</span></div>
-<div class="row"><span class="lbl">&#128101; Ospiti</span><span class="val">%(adulti)s adulti%(bambini_str)s</span></div>
-%(anim_row)s
+<html lang="it"><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;background:#F5EFE4;margin:0;padding:20px">
+<div style="background:white;max-width:600px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)">
+
+  <div style="background:linear-gradient(135deg,#8B3A10,#B85224);padding:28px 32px;color:white;text-align:center">
+    <div style="font-size:48px;margin-bottom:10px">&#9989;</div>
+    <h1 style="margin:0;font-size:22px">Richiesta ricevuta!</h1>
+    <p style="margin:8px 0 0;opacity:.85;font-size:15px">Grazie %(nome)s, ti risponderemo entro poche ore</p>
+  </div>
+
+  <div style="padding:28px 32px">
+    <p style="font-size:15px;color:#1C1812;line-height:1.7">
+      Abbiamo ricevuto la tua richiesta di preventivo.
+      Ti contatteremo presto all'indirizzo <strong>%(email)s</strong>.
+    </p>
+
+    <div style="background:linear-gradient(135deg,#F5EFE4,#EDE2D4);border-radius:12px;padding:20px;border-left:4px solid #B85224;margin-bottom:22px">
+      <div style="font-weight:700;font-size:15px;color:#B85224;margin-bottom:12px">&#128203; Riepilogo</div>
+      %(apt_rows)s
+      %(row_arrivo)s
+      %(row_partenza)s
+      %(row_durata)s
+      %(row_ospiti)s
+      %(anim_row)s
+    </div>
+
+    %(apt_buttons)s
+
+    <div style="background:#F0F7F9;border-radius:10px;padding:16px 20px;border-left:4px solid #2C6B7A">
+      <strong style="color:#2C6B7A">&#128222; Risposta urgente?</strong><br>
+      <span style="font-size:14px">Chiamaci al
+        <a href="tel:+39%(phone_raw)s" style="color:#2C6B7A">%(phone)s</a>
+      </span>
+    </div>
+  </div>
+
+  <div style="background:#F5EFE4;padding:14px 32px;font-size:12px;color:#7A6E63;text-align:center;border-top:1px solid #E8DDD0">
+    %(site)s &middot; <a href="%(site_url)s" style="color:#B85224">%(site_url)s</a>
+  </div>
 </div>
-%(apt_buttons)s
-<div class="contact">
-<strong style="color:#2C6B7A">&#128222; Risposta urgente?</strong><br>
-<span style="font-size:14px">Chiamaci al <a href="tel:+39%(phone_raw)s" style="color:#2C6B7A">%(phone)s</a></span>
-</div>
-</div>
-<div class="footer">%(site)s &middot; <a href="%(site_url)s">%(site_url)s</a></div>
-</div></body></html>""" % {
-        'nome': p['nome'], 'email': p['email'],
-        'apt_rows': apt_rows, 'apt_buttons': apt_buttons,
-        'checkin': format_date(p['checkin']), 'checkout': format_date(p['checkout']),
-        'notti': notti, 'adulti': p['adulti'], 'bambini_str': bambini_str,
-        'anim_row': anim_row,
-        'phone': cfg['phone'], 'phone_raw': cfg['phone'].replace(' ', ''),
-        'site': cfg['site'], 'site_url': cfg['site_url'],
+</body></html>""" % {
+        'nome':        p['nome'],
+        'email':       p['email'],
+        'apt_rows':    apt_rows,
+        'apt_buttons': apt_buttons,
+        'row_arrivo':  row('&#128197; Arrivo',   format_date(p['checkin'])),
+        'row_partenza':row('&#128197; Partenza', format_date(p['checkout'])),
+        'row_durata':  row('&#127769; Durata',   '%d notti' % notti),
+        'row_ospiti':  row('&#128101; Ospiti',   '%s adulti%s' % (p['adulti'], bambini_str)),
+        'anim_row':    anim_row,
+        'phone':       cfg['phone'],
+        'phone_raw':   cfg['phone'].replace(' ', ''),
+        'site':        cfg['site'],
+        'site_url':    cfg['site_url'],
     }
     return html
 
@@ -291,17 +301,17 @@ class handler(BaseHTTPRequestHandler):
             return self._json(500, {'error': 'RESEND_API_KEY non configurata'})
 
         p = {
-            'nome':        body['nome'],
-            'cognome':     body['cognome'],
-            'email':       body['email'],
-            'telefono':    body['telefono'],
-            'note':        body.get('note', ''),
+            'nome':         body['nome'],
+            'cognome':      body['cognome'],
+            'email':        body['email'],
+            'telefono':     body['telefono'],
+            'note':         body.get('note', ''),
             'appartamenti': body['appartamenti'],
-            'checkin':     body['checkin'],
-            'checkout':    body['checkout'],
-            'adulti':      body['adulti'],
-            'bambini':     body.get('bambini', 0),
-            'animali':     body.get('animali', {}),
+            'checkin':      body['checkin'],
+            'checkout':     body['checkout'],
+            'adulti':       body['adulti'],
+            'bambini':      body.get('bambini', 0),
+            'animali':      body.get('animali', {}),
         }
 
         ok, err = send_emails(p, cfg)
