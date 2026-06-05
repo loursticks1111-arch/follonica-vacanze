@@ -92,24 +92,23 @@ def fetch_sheet_data(api_key: str, sheet_name: str) -> list:
 def is_yellow(color: dict) -> bool:
     """
     Restituisce True se il colore di sfondo è giallo (o simile).
-    Google Sheets esprime i colori come float 0.0–1.0 per R, G, B.
-    Giallo puro = {red:1, green:1, blue:0}
-    Gestiamo anche tonalità più chiare o dorate.
-
-    Celle bianche o senza colore → False.
+    Google Sheets API omette i componenti RGB quando valgono 0.
+    Es. giallo puro #FFFF00 → {red:1.0, green:1.0} senza blue.
+    Quindi i default devono essere 0.0, non 1.0.
     """
     if not color:
         return False
 
-    r = color.get('red',   1.0)
-    g = color.get('green', 1.0)
-    b = color.get('blue',  1.0)
+    r = color.get('red',   0.0)   # 0.0 quando omesso dall'API
+    g = color.get('green', 0.0)   # 0.0 quando omesso dall'API
+    b = color.get('blue',  0.0)   # 0.0 quando omesso dall'API
 
-    # Bianco puro o quasi (sfondo default) → non occupato
+    # Bianco esplicito {1,1,1} → non occupato
     if r >= 0.95 and g >= 0.95 and b >= 0.95:
         return False
 
     # Giallo: rosso alto, verde alto, blu basso
+    # Copre: giallo puro (1,1,0), ambra (1,0.8,0), giallo chiaro (1,1,0.4)
     return r >= 0.75 and g >= 0.65 and b <= 0.45
 
 
