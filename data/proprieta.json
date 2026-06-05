@@ -2,21 +2,21 @@
   "rif001": {
     "nome": "RIF.001 — Bilocale con Giardino Privato",
     "tipo": "Bilocale",
-    "capacita": 4,
+    "capacita": 5,
     "caratteristiche": "Giardino privato · Piano terra · Zona Pratoranieri · 2 passi dal mare",
     "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-001.html"
   },
   "rif002": {
     "nome": "RIF.002 — Trilocale con Giardino Privato",
     "tipo": "Trilocale",
-    "capacita": 6,
+    "capacita": 7,
     "caratteristiche": "Giardino privato · Piano terra · Ideale per famiglie numerose",
     "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-002.html"
   },
   "rif003": {
     "nome": "RIF.003 — Bilocale con Terrazzo Vista Mare",
     "tipo": "Bilocale",
-    "capacita": 4,
+    "capacita": 5,
     "caratteristiche": "Ampio terrazzo con vista mare · Primo piano",
     "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-003.html"
   },
@@ -30,7 +30,7 @@
   "rif005": {
     "nome": "RIF.005 — Bilocale con Vista Tramonto",
     "tipo": "Bilocale",
-    "capacita": 4,
+    "capacita": 5,
     "caratteristiche": "Vista tramonto spettacolare · Secondo piano",
     "url": "https://www.follonicavacanze.com/appartamenti-in-affitto/appartamento-rif-005.html"
   },
