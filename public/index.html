@@ -3,222 +3,357 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verifica disponibilità — FollonicaVacanze</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Verifica disponibilità — FollonicaVacanze.com</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --sand: #F5EFE4; --sand-dark: #E8DDD0; --terra: #B85224;
-    --terra-dark: #8B3A10; --terra-light: #D4784A;
-    --sea: #2C6B7A; --sea-light: #4A9BAE;
-    --ink: #1C1812; --muted: #7A6E63; --border: #D8CEBE;
-    --white: #FDFAF6; --success: #4A7C59; --error: #C0392B;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: linear-gradient(145deg, #F0E8D8 0%, #E8DDD0 40%, #F5EFE4 100%);
-    min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  .container { width: 100%; max-width: 780px; }
+/* ── Palette ispirata al sito follonicavacanze.com ────────────
+   Sfondo bianco/grigio chiaro, accento blu-teal mediterraneo,
+   testo scuro, tipografia pulita — integrazione seamless con
+   il template YOOtheme di Joomla.
+───────────────────────────────────────────────────────────── */
+:root {
+  --primary:      #1A6FA8;   /* blu mediterraneo */
+  --primary-dark: #125082;
+  --primary-light:#E8F4FC;
+  --sea:          #0D8C8C;   /* teal secondario */
+  --sea-light:    #E0F5F5;
+  --text:         #2C2C2C;
+  --muted:        #6B7280;
+  --border:       #D1D9E0;
+  --bg:           #F4F7FA;
+  --white:        #FFFFFF;
+  --success:      #2E7D32;
+  --error:        #C0392B;
+}
 
-  .header { text-align: center; margin-bottom: 32px; }
-  .header-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--terra); margin-bottom: 10px; }
-  .header h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(26px, 5vw, 38px); font-weight: 600; color: var(--ink); line-height: 1.2; }
-  .header p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .steps { display: flex; align-items: center; justify-content: center; margin-bottom: 28px; }
-  .step-dot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .step-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; transition: all .4s; }
-  .step-circle.active  { background: var(--terra); color: white; box-shadow: 0 4px 16px rgba(184,82,36,.35); }
-  .step-circle.done    { background: var(--success); color: white; }
-  .step-circle.inactive{ background: var(--sand-dark); color: var(--muted); border: 1.5px solid var(--border); }
-  .step-label { font-size: 11px; font-weight: 500; color: var(--muted); white-space: nowrap; }
-  .step-label.active { color: var(--terra); font-weight: 600; }
-  .step-connector { width: 80px; height: 2px; background: var(--border); margin: 0 4px 22px; transition: background .4s; }
-  .step-connector.done { background: var(--success); }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 32px 16px 48px;
+}
 
-  .card { background: var(--white); border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 8px 40px rgba(28,24,18,.08); overflow: hidden; }
-  .card-header { background: linear-gradient(135deg, var(--terra-dark) 0%, var(--terra) 60%, var(--terra-light) 100%); padding: 22px 28px; display: flex; align-items: center; gap: 14px; }
-  .card-header.sea { background: linear-gradient(135deg,#1D5C6A,var(--sea),var(--sea-light)); }
-  .card-header-icon { width: 44px; height: 44px; background: rgba(255,255,255,.18); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-  .card-header-text h2 { font-family: 'Cormorant Garamond',serif; font-size: 20px; font-weight: 600; color: white; }
-  .card-header-text p  { font-size: 12.5px; color: rgba(255,255,255,.75); margin-top: 2px; }
-  .card-body { padding: 28px; }
+/* ── Contenitore principale ─────────────────────────────── */
+.fv-wrap { max-width: 720px; margin: 0 auto; }
 
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
-  .form-row.quad   { grid-template-columns: 1fr 1fr 1fr 1fr; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group label { font-size: 10.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .form-group input, .form-group select {
-    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
-    border-radius: 10px; font-family: 'DM Sans',sans-serif;
-    font-size: 14px; color: var(--ink); background: var(--sand); transition: all .2s; appearance: none;
-  }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    outline: none; border-color: var(--terra); background: white;
-    box-shadow: 0 0 0 3px rgba(184,82,36,.1);
-  }
-  .form-group textarea::placeholder { color: #BBA98E; }
-  .form-group input::placeholder { color: #BBA98E; }
-  .select-wrap { position: relative; }
-  .select-wrap::after { content: '▾'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 12px; }
-  .date-note { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--sea); margin-top: 4px; font-weight: 500; }
+/* ── Intestazione form ──────────────────────────────────── */
+.fv-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.fv-header .fv-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: 1px solid rgba(26,111,168,.2);
+  padding: 5px 14px; border-radius: 20px;
+  margin-bottom: 12px;
+}
+.fv-header h1 {
+  font-family: 'Raleway', sans-serif;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 700; color: var(--text);
+  line-height: 1.25; margin-bottom: 6px;
+}
+.fv-header p { font-size: 14px; color: var(--muted); }
 
-  /* Sezione animali */
-  .pets-section {
-    background: linear-gradient(135deg, #F0F7F9, #E8F3F6);
-    border: 1.5px solid #B8D8E0;
-    border-radius: 12px;
-    padding: 16px 18px;
-    margin-bottom: 20px;
-  }
-  .pets-title {
-    font-size: 12px; font-weight: 600; letter-spacing: .5px;
-    text-transform: uppercase; color: var(--sea);
-    margin-bottom: 12px;
-    display: flex; align-items: center; gap: 6px;
-  }
+/* ── Progress steps ─────────────────────────────────────── */
+.fv-steps {
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px; gap: 0;
+}
+.fv-step { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.fv-step-circle {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; transition: all .35s;
+  font-family: 'Raleway', sans-serif;
+}
+.fv-step-circle.active  { background: var(--primary); color: #fff; box-shadow: 0 2px 12px rgba(26,111,168,.35); }
+.fv-step-circle.done    { background: var(--success); color: #fff; }
+.fv-step-circle.inactive{ background: var(--white); color: var(--muted); border: 2px solid var(--border); }
+.fv-step-label { font-size: 11px; font-weight: 600; color: var(--muted); white-space: nowrap; letter-spacing: .3px; }
+.fv-step-label.active { color: var(--primary); }
+.fv-step-line { width: 70px; height: 2px; background: var(--border); margin: 0 6px 18px; transition: background .35s; }
+.fv-step-line.done { background: var(--success); }
 
-  .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-family: 'DM Sans',sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .25s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .btn-primary { background: linear-gradient(135deg,var(--terra-dark),var(--terra)); color: white; box-shadow: 0 4px 16px rgba(184,82,36,.3); }
-  .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,82,36,.4); }
-  .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-  .btn-secondary { background: transparent; color: var(--terra); border: 1.5px solid var(--terra); margin-top: 10px; }
-  .btn-secondary:hover { background: rgba(184,82,36,.06); }
+/* ── Card ───────────────────────────────────────────────── */
+.fv-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,.06);
+}
+.fv-card-head {
+  background: var(--primary);
+  padding: 16px 22px;
+  display: flex; align-items: center; gap: 12px;
+  color: #fff;
+}
+.fv-card-head.teal { background: var(--sea); }
+.fv-card-head-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  background: rgba(255,255,255,.18); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.fv-card-head h2 {
+  font-family: 'Raleway', sans-serif;
+  font-size: 16px; font-weight: 700; margin-bottom: 1px;
+}
+.fv-card-head p { font-size: 12px; opacity: .82; }
 
-  .error-msg { color: var(--error); font-size: 13px; margin-bottom: 14px; display: none; }
+.fv-card-body { padding: 24px; }
 
-  .spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255,255,255,.3); border-top-color: white; border-radius: 50%; animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── Griglia form ───────────────────────────────────────── */
+.fv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+.fv-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.fv-group { display: flex; flex-direction: column; gap: 5px; }
+.fv-group label {
+  font-size: 10.5px; font-weight: 700; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fv-group label .req { color: var(--error); }
 
-  /* Risultati — multi-selezione */
-  .result-title { font-family: 'Cormorant Garamond',serif; font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
-  .result-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.fv-group input, .fv-group select, .fv-group textarea {
+  width: 100%; padding: 10px 12px;
+  border: 1.5px solid var(--border); border-radius: 6px;
+  font-family: 'Lato', sans-serif; font-size: 14px;
+  color: var(--text); background: var(--bg);
+  transition: border-color .2s, box-shadow .2s;
+  appearance: none;
+}
+.fv-group input:focus, .fv-group select:focus, .fv-group textarea:focus {
+  outline: none; border-color: var(--primary); background: var(--white);
+  box-shadow: 0 0 0 3px rgba(26,111,168,.12);
+}
+.fv-group input::placeholder, .fv-group textarea::placeholder { color: #B0BAC5; }
+.fv-select-wrap { position: relative; }
+.fv-select-wrap::after {
+  content: '▾'; position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%); color: var(--muted);
+  pointer-events: none; font-size: 11px;
+}
+.fv-date-note { font-size: 11.5px; color: var(--sea); margin-top: 3px; font-weight: 600; }
 
-  /* Contatore selezione */
-  .selection-counter {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--sand-dark); border-radius: 20px;
-    padding: 5px 14px; font-size: 12.5px; font-weight: 600;
-    color: var(--muted); margin-bottom: 14px;
-    transition: all .3s;
-  }
-  .selection-counter.has-selection { background: rgba(184,82,36,.12); color: var(--terra); }
-  .selection-counter.max-selection { background: rgba(74,124,89,.12); color: var(--success); }
+/* ── Sezione animali ────────────────────────────────────── */
+.fv-pets {
+  background: var(--sea-light);
+  border: 1px solid rgba(13,140,140,.2);
+  border-radius: 8px; padding: 14px 16px; margin-bottom: 18px;
+}
+.fv-pets-title {
+  font-size: 11px; font-weight: 700; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--sea);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
 
-  .apt-card {
-    border: 1.5px solid var(--border); border-radius: 12px;
-    padding: 14px 16px; margin-bottom: 10px; cursor: pointer;
-    transition: all .2s; background: var(--sand);
-    display: flex; align-items: center; gap: 14px;
-  }
-  .apt-card:hover:not(.disabled) { border-color: var(--terra); background: white; }
-  .apt-card.selected { border-color: var(--terra); background: rgba(184,82,36,.05); box-shadow: 0 0 0 3px rgba(184,82,36,.12); }
-  .apt-card.disabled { opacity: .4; cursor: not-allowed; }
-  .apt-icon { width: 42px; height: 42px; background: linear-gradient(135deg,var(--sea),var(--sea-light)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-  .apt-info { flex: 1; }
-  .apt-name { font-weight: 600; font-size: 14px; color: var(--ink); }
-  .apt-desc { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
-  .apt-link { font-size: 12px; color: var(--terra); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; }
+/* ── Bottoni ────────────────────────────────────────────── */
+.fv-btn {
+  width: 100%; padding: 13px;
+  border: none; border-radius: 7px;
+  font-family: 'Raleway', sans-serif; font-size: 14px; font-weight: 700;
+  letter-spacing: .4px; cursor: pointer;
+  transition: all .22s; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.fv-btn-primary {
+  background: var(--primary); color: #fff;
+  box-shadow: 0 3px 12px rgba(26,111,168,.28);
+}
+.fv-btn-primary:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 5px 16px rgba(26,111,168,.38); }
+.fv-btn-primary:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+.fv-btn-outline {
+  background: transparent; color: var(--primary);
+  border: 1.5px solid var(--primary); margin-top: 10px;
+}
+.fv-btn-outline:hover { background: var(--primary-light); }
 
-  /* Checkbox personalizzata */
-  .apt-checkbox {
-    width: 22px; height: 22px; border: 2px solid var(--border);
-    border-radius: 6px; flex-shrink: 0; transition: all .2s;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; color: white;
-  }
-  .apt-checkbox.checked { border-color: var(--terra); background: var(--terra); }
+/* ── Spinner ────────────────────────────────────────────── */
+.fv-spinner {
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,.35);
+  border-top-color: #fff; border-radius: 50%;
+  animation: fv-spin .75s linear infinite;
+}
+@keyframes fv-spin { to { transform: rotate(360deg); } }
 
-  .no-avail { text-align: center; padding: 28px; background: var(--sand); border-radius: 12px; border: 1.5px solid var(--border); }
-  .no-avail .emoji { font-size: 32px; margin-bottom: 10px; }
-  .no-avail p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+/* ── Messaggio errore ───────────────────────────────────── */
+.fv-error { color: var(--error); font-size: 12.5px; margin-bottom: 14px; display: none; }
 
-  /* Summary Step 2 — multi appartamento */
-  .summary-box { background: linear-gradient(135deg,var(--sea),var(--sea-light)); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; color: white; }
-  .summary-apt { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.2); }
-  .summary-apt:last-child { border-bottom: none; }
-  .summary-apt-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-  .summary-apt-text { font-size: 13px; line-height: 1.5; }
-  .summary-apt-text strong { font-size: 14px; display: block; }
-  .summary-dates { font-size: 12px; opacity: .85; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.2); }
+/* ── Risultati disponibilità ────────────────────────────── */
+.fv-results-meta { margin-bottom: 14px; }
+.fv-results-title {
+  font-family: 'Raleway', sans-serif;
+  font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 3px;
+}
+.fv-results-sub { font-size: 13px; color: var(--muted); }
 
-  .success-screen { text-align: center; padding: 32px 20px; }
-  .success-icon { width: 72px; height: 72px; background: linear-gradient(135deg,var(--success),#5D9A70); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px; box-shadow: 0 8px 24px rgba(74,124,89,.3); }
-  .success-screen h2 { font-family: 'Cormorant Garamond',serif; font-size: 26px; color: var(--ink); margin-bottom: 8px; }
-  .success-screen p { color: var(--muted); font-size: 14px; line-height: 1.7; }
-  .success-new { max-width: 260px; margin: 20px auto 0; }
+.fv-counter {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 13px;
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  margin-bottom: 14px; transition: all .3s;
+}
+.fv-counter.sel  { background: var(--primary-light); border-color: rgba(26,111,168,.3); color: var(--primary); }
+.fv-counter.full { background: #E8F5E9; border-color: rgba(46,125,50,.3); color: var(--success); }
 
-  .privacy-note { font-size: 11.5px; color: var(--muted); text-align: center; margin-top: 14px; line-height: 1.6; }
-  .privacy-note a { color: var(--terra); }
+.fv-apt {
+  border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 13px 15px; margin-bottom: 10px; cursor: pointer;
+  transition: all .2s; background: var(--white);
+  display: flex; align-items: center; gap: 13px;
+}
+.fv-apt:hover:not(.fv-apt-disabled) { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,111,168,.1); }
+.fv-apt.fv-apt-sel { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 0 0 3px rgba(26,111,168,.12); }
+.fv-apt.fv-apt-disabled { opacity: .38; cursor: not-allowed; }
+.fv-apt-icon {
+  width: 40px; height: 40px; flex-shrink: 0;
+  background: var(--primary); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; color: #fff;
+}
+.fv-apt-info { flex: 1; min-width: 0; }
+.fv-apt-name { font-weight: 700; font-size: 13.5px; color: var(--text); }
+.fv-apt-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.fv-apt-link {
+  font-size: 11.5px; color: var(--primary); font-weight: 700;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 3px; margin-top: 3px;
+}
+.fv-apt-link:hover { text-decoration: underline; }
+.fv-chk {
+  width: 20px; height: 20px; flex-shrink: 0;
+  border: 2px solid var(--border); border-radius: 5px;
+  transition: all .2s; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff;
+}
+.fv-chk.on { background: var(--primary); border-color: var(--primary); }
 
-  .panel { animation: slideIn .3s ease; }
-  @keyframes slideIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+/* ── Nessuna disponibilità ──────────────────────────────── */
+.fv-no-avail {
+  text-align: center; padding: 26px;
+  background: var(--bg); border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.fv-no-avail .fv-no-icon { font-size: 30px; margin-bottom: 8px; }
+.fv-no-avail p { color: var(--muted); font-size: 13.5px; line-height: 1.65; }
 
-  @media(max-width:500px) {
-    .form-row, .form-row.triple, .form-row.quad { grid-template-columns: 1fr 1fr; }
-    .card-body { padding: 20px; }
-    .step-connector { width: 40px; }
-  }
+/* ── Summary Step 2 ─────────────────────────────────────── */
+.fv-summary {
+  background: var(--primary);
+  border-radius: 8px; padding: 14px 16px; margin-bottom: 20px;
+  color: #fff;
+}
+.fv-summary-apt {
+  display: flex; gap: 10px; padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,.2);
+}
+.fv-summary-apt:last-child { border-bottom: none; }
+.fv-summary-apt-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+.fv-summary-apt-text { font-size: 13px; line-height: 1.5; }
+.fv-summary-apt-text strong { display: block; font-size: 13.5px; margin-bottom: 1px; }
+.fv-summary-footer { font-size: 12px; opacity: .82; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.2); }
+
+/* ── Conferma invio ─────────────────────────────────────── */
+.fv-success { text-align: center; padding: 28px 16px; }
+.fv-success-icon {
+  width: 68px; height: 68px; border-radius: 50%;
+  background: var(--success); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; margin: 0 auto 16px;
+  box-shadow: 0 4px 18px rgba(46,125,50,.3);
+}
+.fv-success h2 {
+  font-family: 'Raleway', sans-serif;
+  font-size: 22px; font-weight: 700; margin-bottom: 8px;
+}
+.fv-success p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+.fv-success .fv-btn-primary { max-width: 240px; margin: 18px auto 0; }
+
+/* ── Privacy ────────────────────────────────────────────── */
+.fv-privacy { font-size: 11.5px; color: var(--muted); text-align: center; margin-top: 14px; line-height: 1.6; }
+.fv-privacy a { color: var(--primary); }
+
+/* ── Textarea ───────────────────────────────────────────── */
+.fv-group textarea { resize: vertical; line-height: 1.55; }
+
+/* ── Animazione entrata ─────────────────────────────────── */
+.fv-panel { animation: fv-in .28s ease; }
+@keyframes fv-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+@media (max-width: 520px) {
+  .fv-row, .fv-row.three { grid-template-columns: 1fr 1fr; }
+  .fv-card-body { padding: 18px; }
+  .fv-step-line { width: 36px; }
+}
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <div class="header-label">🏖️ Follonica Vacanze</div>
-    <h1>Verifica disponibilità<br>& Richiedi preventivo</h1>
+<div class="fv-wrap">
+
+  <!-- Intestazione -->
+  <div class="fv-header">
+    <div><span class="fv-eyebrow">🏖️ FollonicaVacanze.com</span></div>
+    <h1>Verifica disponibilità & Preventivo</h1>
     <p>Appartamenti sul mare a Follonica, Maremma Toscana</p>
   </div>
 
-  <div class="steps">
-    <div class="step-dot">
-      <div class="step-circle active" id="dot1">1</div>
-      <div class="step-label active" id="lbl1">Disponibilità</div>
+  <!-- Steps -->
+  <div class="fv-steps">
+    <div class="fv-step">
+      <div class="fv-step-circle active" id="dot1">1</div>
+      <div class="fv-step-label active" id="lbl1">Disponibilità</div>
     </div>
-    <div class="step-connector" id="conn1"></div>
-    <div class="step-dot">
-      <div class="step-circle inactive" id="dot2">2</div>
-      <div class="step-label" id="lbl2">Preventivo</div>
+    <div class="fv-step-line" id="ln1"></div>
+    <div class="fv-step">
+      <div class="fv-step-circle inactive" id="dot2">2</div>
+      <div class="fv-step-label" id="lbl2">Preventivo</div>
     </div>
-    <div class="step-connector" id="conn2"></div>
-    <div class="step-dot">
-      <div class="step-circle inactive" id="dot3">✓</div>
-      <div class="step-label" id="lbl3">Inviato</div>
+    <div class="fv-step-line" id="ln2"></div>
+    <div class="fv-step">
+      <div class="fv-step-circle inactive" id="dot3">✓</div>
+      <div class="fv-step-label" id="lbl3">Inviato</div>
     </div>
   </div>
 
-  <div class="card">
+  <!-- Card -->
+  <div class="fv-card">
 
-    <!-- ═══ STEP 1 ═══ -->
-    <div id="step1">
-      <div class="card-header">
-        <div class="card-header-icon">📅</div>
-        <div class="card-header-text">
+    <!-- ─── STEP 1 ─────────────────────────────── -->
+    <div id="s1">
+      <div class="fv-card-head">
+        <div class="fv-card-head-icon">📅</div>
+        <div>
           <h2>Verifica disponibilità</h2>
           <p>Seleziona le date del tuo soggiorno</p>
         </div>
       </div>
-      <div class="card-body panel">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Data di arrivo (Check-in sabato ore 15-18)</label>
+      <div class="fv-card-body fv-panel">
+
+        <div class="fv-row">
+          <div class="fv-group">
+            <label>Data di arrivo (Check-in sabato ore 15–18)</label>
             <input type="date" id="checkin">
-            <div class="date-note">📌 Solo sabati selezionabili</div>
+            <div class="fv-date-note">📌 Solo sabati selezionabili</div>
           </div>
-          <div class="form-group">
+          <div class="fv-group">
             <label>Data di partenza (Check-out sabato entro ore 10)</label>
             <input type="date" id="checkout">
           </div>
         </div>
 
-        <div class="form-row triple" style="margin-bottom:20px">
-          <div class="form-group">
+        <div class="fv-row three" style="margin-bottom:18px">
+          <div class="fv-group">
             <label>Adulti</label>
-            <div class="select-wrap">
+            <div class="fv-select-wrap">
               <select id="adulti">
                 <option value="">—</option>
                 <option>1</option><option>2</option><option>3</option>
@@ -226,9 +361,9 @@
               </select>
             </div>
           </div>
-          <div class="form-group">
+          <div class="fv-group">
             <label>Bambini (≤12 anni)</label>
-            <div class="select-wrap">
+            <div class="fv-select-wrap">
               <select id="bambini">
                 <option value="0">0</option>
                 <option>1</option><option>2</option><option>3</option><option>4</option>
@@ -237,176 +372,165 @@
           </div>
         </div>
 
-        <!-- Sezione animali -->
-        <div class="pets-section">
-          <div class="pets-title">🐾 Animali domestici</div>
-          <div class="form-row triple" style="margin-bottom:12px">
-            <div class="form-group">
+        <!-- Animali -->
+        <div class="fv-pets">
+          <div class="fv-pets-title">🐾 Animali domestici</div>
+          <div class="fv-row three" style="margin-bottom:10px">
+            <div class="fv-group">
               <label>Piccola taglia</label>
-              <div class="select-wrap">
-                <select id="animali-piccoli">
-                  <option value="0">0</option>
-                  <option>1</option><option>2</option><option>3</option>
+              <div class="fv-select-wrap">
+                <select id="anim-pic">
+                  <option value="0">0</option><option>1</option><option>2</option><option>3</option>
                 </select>
               </div>
             </div>
-            <div class="form-group">
+            <div class="fv-group">
               <label>Grande taglia</label>
-              <div class="select-wrap">
-                <select id="animali-grandi">
-                  <option value="0">0</option>
-                  <option>1</option><option>2</option><option>3</option>
+              <div class="fv-select-wrap">
+                <select id="anim-gra">
+                  <option value="0">0</option><option>1</option><option>2</option><option>3</option>
                 </select>
               </div>
             </div>
           </div>
-          <div class="form-group" id="animali-tipo-group" style="display:none">
-            <label>Tipo di animali <span style="color:var(--terra)">*</span></label>
-            <input type="text" id="animali-tipo" placeholder="Es. labrador + gatto soriano">
+          <div class="fv-group" id="anim-tipo-wrap" style="display:none">
+            <label>Tipo di animali <span class="req">*</span></label>
+            <input type="text" id="anim-tipo" placeholder="Es. labrador + gatto soriano">
           </div>
         </div>
 
-        <div class="error-msg" id="err1"></div>
-        <button class="btn btn-primary" id="btnCheck" onclick="checkDisponibilita()">
+        <div class="fv-error" id="err1"></div>
+        <button class="fv-btn fv-btn-primary" id="btnCheck" onclick="checkDisp()">
           Verifica disponibilità
         </button>
       </div>
     </div>
 
-    <!-- ═══ STEP 1b — Risultati ═══ -->
-    <div id="step1b" style="display:none">
-      <div class="card-header">
-        <div class="card-header-icon">🏡</div>
-        <div class="card-header-text">
+    <!-- ─── STEP 1b — Risultati ─────────────────── -->
+    <div id="s1b" style="display:none">
+      <div class="fv-card-head">
+        <div class="fv-card-head-icon">🏡</div>
+        <div>
           <h2>Appartamenti disponibili</h2>
-          <p id="period-label"></p>
+          <p id="period-lbl"></p>
         </div>
       </div>
-      <div class="card-body panel">
+      <div class="fv-card-body fv-panel">
         <div id="risultati"></div>
-        <div class="error-msg" id="err1b"></div>
-        <button class="btn btn-primary" onclick="goStep2()" style="margin-bottom:10px">
+        <div class="fv-error" id="err1b"></div>
+        <button class="fv-btn fv-btn-primary" onclick="goS2()" style="margin-bottom:10px">
           Richiedi preventivo →
         </button>
-        <button class="btn btn-secondary" onclick="resetStep1()">← Modifica date</button>
+        <button class="fv-btn fv-btn-outline" onclick="resetS1()">← Modifica date</button>
       </div>
     </div>
 
-    <!-- ═══ STEP 2 ═══ -->
-    <div id="step2" style="display:none">
-      <div class="card-header sea">
-        <div class="card-header-icon">✉️</div>
-        <div class="card-header-text">
+    <!-- ─── STEP 2 ─────────────────────────────── -->
+    <div id="s2" style="display:none">
+      <div class="fv-card-head teal">
+        <div class="fv-card-head-icon">✉️</div>
+        <div>
           <h2>Richiedi preventivo</h2>
           <p>Ti risponderemo entro poche ore</p>
         </div>
       </div>
-      <div class="card-body panel">
-        <div class="summary-box" id="summaryBox"></div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nome *</label>
+      <div class="fv-card-body fv-panel">
+        <div class="fv-summary" id="summaryBox"></div>
+        <div class="fv-row">
+          <div class="fv-group">
+            <label>Nome <span class="req">*</span></label>
             <input type="text" id="nome" placeholder="Mario">
           </div>
-          <div class="form-group">
-            <label>Cognome *</label>
+          <div class="fv-group">
+            <label>Cognome <span class="req">*</span></label>
             <input type="text" id="cognome" placeholder="Rossi">
           </div>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>E-mail *</label>
+        <div class="fv-row">
+          <div class="fv-group">
+            <label>E-mail <span class="req">*</span></label>
             <input type="email" id="email" placeholder="mario@email.it">
           </div>
-          <div class="form-group">
-            <label>Telefono *</label>
-            <input type="tel" id="telefono" placeholder="+39 333 1234567">
+          <div class="fv-group">
+            <label>Telefono <span class="req">*</span></label>
+            <input type="tel" id="tel" placeholder="+39 333 1234567">
           </div>
         </div>
-        <div class="form-group" style="margin-bottom:20px">
+        <div class="fv-group" style="margin-bottom:18px">
           <label>Note aggiuntive</label>
-          <textarea id="note" rows="5" placeholder="Es. piano preferito, esigenze particolari..."
-            style="width:100%;padding:12px 14px;border:1.5px solid var(--border);
-                   border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;
-                   color:var(--ink);background:var(--sand);transition:all .2s;
-                   resize:vertical;line-height:1.6"></textarea>
+          <textarea id="note" rows="5" placeholder="Es. piano preferito, esigenze particolari..."></textarea>
         </div>
-        <div class="error-msg" id="err2"></div>
-        <button class="btn btn-primary" id="btnSend" onclick="inviaPreventivo()">
+        <div class="fv-error" id="err2"></div>
+        <button class="fv-btn fv-btn-primary" id="btnSend" onclick="invia()">
           Invia richiesta preventivo
         </button>
-        <button class="btn btn-secondary" onclick="backToRisultati()">← Torna agli appartamenti</button>
-        <p class="privacy-note">
+        <button class="fv-btn fv-btn-outline" onclick="backToRes()">← Torna agli appartamenti</button>
+        <p class="fv-privacy">
           Inviando accetti la nostra <a href="/privacy-policy">Privacy Policy</a>.<br>
           I tuoi dati sono trattati esclusivamente per rispondere alla tua richiesta.
         </p>
       </div>
     </div>
 
-    <!-- ═══ STEP 3 — Conferma ═══ -->
-    <div id="step3" style="display:none">
-      <div class="card-body">
-        <div class="success-screen panel">
-          <div class="success-icon">✅</div>
+    <!-- ─── STEP 3 — Conferma ───────────────────── -->
+    <div id="s3" style="display:none">
+      <div class="fv-card-body">
+        <div class="fv-success fv-panel">
+          <div class="fv-success-icon">✅</div>
           <h2>Richiesta inviata!</h2>
           <p>
-            Grazie <strong id="nomeConferma"></strong>!<br>
-            La tua richiesta è stata inviata. Ti risponderemo<br>
-            a <strong id="emailConferma"></strong> entro poche ore.
+            Grazie <strong id="nomeConf"></strong>!<br>
+            Ti risponderemo a <strong id="emailConf"></strong> entro poche ore.
           </p>
-          <button class="btn btn-primary success-new" onclick="nuovaRicerca()">
-            Nuova ricerca
-          </button>
+          <button class="fv-btn fv-btn-primary" onclick="nuovaRicerca()">Nuova ricerca</button>
         </div>
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /fv-card -->
+</div><!-- /fv-wrap -->
 
 <script>
+// ── Configurazione ──────────────────────────────────────────
 const BACKEND = 'https://follonica-vacanze.vercel.app';
+const MAX_APT = 2;
 
-const EMOJI = { 'Bilocale': '🌊', 'Trilocale': '⛵' };
-const MAX_SELEZIONE = 2;
+const APT_ICONS = { 'Bilocale': '🌊', 'Trilocale': '⛵' };
 
-let selectedApts = [];   // array di max 2 appartamenti
-let searchParams  = {};
+let selApts = [];
+let searchP  = {};
 
-// ─── Utilità date ─────────────────────────
-function isSabato(str) { return new Date(str + 'T12:00:00').getDay() === 6; }
-function formatDate(str) {
-  return new Date(str + 'T12:00:00').toLocaleDateString('it-IT', {
+// ── Utilità date ─────────────────────────────────────────
+function isSab(s) { return new Date(s + 'T12:00:00').getDay() === 6; }
+function fmtDate(s) {
+  return new Date(s + 'T12:00:00').toLocaleDateString('it-IT', {
     day: '2-digit', month: 'long', year: 'numeric'
   });
 }
 
-// ─── Data minima = prossimo sabato ────────
+// ── Data minima = prossimo sabato ─────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   const oggi = new Date();
-  const giorni = (6 - oggi.getDay() + 7) % 7 || 7;
-  const ps = new Date(oggi);
-  ps.setDate(oggi.getDate() + giorni);
-  const min = ps.toISOString().split('T')[0];
+  const gg   = (6 - oggi.getDay() + 7) % 7 || 7;
+  const ps   = new Date(oggi); ps.setDate(oggi.getDate() + gg);
+  const min  = ps.toISOString().split('T')[0];
   document.getElementById('checkin').min  = min;
   document.getElementById('checkout').min = min;
 
-  // Mostra campo tipo animali quando se ne seleziona almeno uno
-  ['animali-piccoli', 'animali-grandi'].forEach(id => {
-    document.getElementById(id).addEventListener('change', aggiornaAnimali);
+  ['anim-pic','anim-gra'].forEach(id => {
+    document.getElementById(id).addEventListener('change', updAnimali);
   });
 });
 
-function aggiornaAnimali() {
-  const piccoli = parseInt(document.getElementById('animali-piccoli').value) || 0;
-  const grandi  = parseInt(document.getElementById('animali-grandi').value)  || 0;
-  document.getElementById('animali-tipo-group').style.display =
-    (piccoli + grandi > 0) ? 'block' : 'none';
+function updAnimali() {
+  const p = parseInt(document.getElementById('anim-pic').value) || 0;
+  const g = parseInt(document.getElementById('anim-gra').value) || 0;
+  document.getElementById('anim-tipo-wrap').style.display = (p + g > 0) ? 'block' : 'none';
 }
 
-// ─── Validazione date solo sabato ─────────
+// ── Validazione date solo sabato ──────────────────────────
 document.getElementById('checkin').addEventListener('change', function() {
-  if (this.value && !isSabato(this.value)) {
+  if (this.value && !isSab(this.value)) {
     showErr('err1', '⚠️ La data di arrivo deve essere un sabato.');
     this.value = '';
   } else {
@@ -420,249 +544,231 @@ document.getElementById('checkin').addEventListener('change', function() {
   }
 });
 document.getElementById('checkout').addEventListener('change', function() {
-  if (this.value && !isSabato(this.value)) {
+  if (this.value && !isSab(this.value)) {
     showErr('err1', '⚠️ La data di partenza deve essere un sabato.');
     this.value = '';
   } else hideErr('err1');
 });
 
-// ─── Step 1 — Verifica disponibilità ──────
-async function checkDisponibilita() {
-  const checkin  = document.getElementById('checkin').value;
-  const checkout = document.getElementById('checkout').value;
-  const adulti   = document.getElementById('adulti').value;
-  const bambini  = document.getElementById('bambini').value;
+// ── Step 1 — Verifica disponibilità ──────────────────────
+async function checkDisp() {
+  const ci    = document.getElementById('checkin').value;
+  const co    = document.getElementById('checkout').value;
+  const ad    = document.getElementById('adulti').value;
+  const ba    = document.getElementById('bambini').value;
+  const pic   = parseInt(document.getElementById('anim-pic').value) || 0;
+  const gra   = parseInt(document.getElementById('anim-gra').value) || 0;
+  const tipo  = document.getElementById('anim-tipo').value.trim();
 
-  if (!checkin || !checkout) return showErr('err1', '⚠️ Seleziona le date di arrivo e partenza.');
-  if (!adulti)               return showErr('err1', '⚠️ Seleziona il numero di adulti.');
-  if (!isSabato(checkin) || !isSabato(checkout)) return showErr('err1', '⚠️ Entrambe le date devono essere sabati.');
+  if (!ci || !co) return showErr('err1', '⚠️ Seleziona le date di arrivo e partenza.');
+  if (!ad)        return showErr('err1', '⚠️ Seleziona il numero di adulti.');
+  if (!isSab(ci) || !isSab(co)) return showErr('err1', '⚠️ Entrambe le date devono essere sabati.');
+  if ((pic + gra > 0) && !tipo) return showErr('err1', '⚠️ Specifica il tipo di animali.');
   hideErr('err1');
 
-  const piccoli = parseInt(document.getElementById('animali-piccoli').value) || 0;
-  const grandi  = parseInt(document.getElementById('animali-grandi').value)  || 0;
-  const tipoAnimali = document.getElementById('animali-tipo').value.trim();
-
-  if ((piccoli + grandi > 0) && !tipoAnimali) {
-    return showErr('err1', '⚠️ Specifica il tipo di animali nel campo apposito.');
-  }
-  const ospiti  = parseInt(adulti) + parseInt(bambini || 0);
-
-  searchParams = {
-    checkin, checkout,
-    adulti: parseInt(adulti), bambini: parseInt(bambini || 0), ospiti,
-    animali: { piccoli, grandi, tipo: tipoAnimali }
+  searchP = {
+    checkin: ci, checkout: co,
+    adulti: parseInt(ad), bambini: parseInt(ba || 0),
+    ospiti: parseInt(ad) + parseInt(ba || 0),
+    animali: { piccoli: pic, grandi: gra, tipo }
   };
 
-  setLoading('btnCheck', true, 'Verifica in corso...');
-  selectedApts = [];
+  setLoad('btnCheck', true, 'Verifica in corso...');
+  selApts = [];
 
   try {
     const res  = await fetch(`${BACKEND}/api/check_availability`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ checkin, checkout, ospiti }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ checkin: ci, checkout: co, ospiti: searchP.ospiti })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Errore del server');
-    mostraRisultati(data.disponibili);
+    mostraRis(data.disponibili);
   } catch(e) {
-    showErr('err1', `⚠️ Errore: ${e.message}. Riprova o contattaci.`);
+    showErr('err1', `⚠️ ${e.message}. Riprova o contattaci.`);
   } finally {
-    setLoading('btnCheck', false, 'Verifica disponibilità');
+    setLoad('btnCheck', false, 'Verifica disponibilità');
   }
 }
 
-function mostraRisultati(disponibili) {
-  document.getElementById('step1').style.display  = 'none';
-  document.getElementById('step1b').style.display = 'block';
-  document.getElementById('period-label').textContent =
-    `dal ${formatDate(searchParams.checkin)} al ${formatDate(searchParams.checkout)}`;
+function mostraRis(disp) {
+  document.getElementById('s1').style.display   = 'none';
+  document.getElementById('s1b').style.display  = 'block';
+  document.getElementById('period-lbl').textContent =
+    `dal ${fmtDate(searchP.checkin)} al ${fmtDate(searchP.checkout)}`;
 
   const box = document.getElementById('risultati');
-
-  if (!disponibili || disponibili.length === 0) {
+  if (!disp || disp.length === 0) {
     box.innerHTML = `
-      <div class="no-avail">
-        <div class="emoji">😕</div>
-        <p><strong>Mi dispiace, per il periodo selezionato tutti gli appartamenti sono già prenotati.</strong><br><br>
-        Prova con date diverse oppure contattaci direttamente:<br>
-        <strong>📞 338 2233166</strong></p>
+      <div class="fv-no-avail">
+        <div class="fv-no-icon">😕</div>
+        <p><strong>Per il periodo selezionato tutti gli appartamenti sono già prenotati.</strong><br><br>
+        Prova con date diverse o contattaci:<br><strong>📞 338 2233166</strong></p>
       </div>`;
     return;
   }
 
+  const n = disp.length;
   box.innerHTML = `
-    <div class="result-title">🎉 ${disponibili.length} ${disponibili.length === 1 ? 'appartamento disponibile' : 'appartamenti disponibili'}</div>
-    <div class="result-subtitle">Puoi selezionare fino a ${MAX_SELEZIONE} appartamenti per richiedere il preventivo</div>
-    <div class="selection-counter" id="counter">0 / ${MAX_SELEZIONE} selezionati</div>
-    ${disponibili.map(a => `
-      <div class="apt-card" onclick="toggleApt(${JSON.stringify(a).replace(/"/g,'&quot;')})" id="card-${a.id}">
-        <div class="apt-icon">${EMOJI[a.tipo] || '🏡'}</div>
-        <div class="apt-info">
-          <div class="apt-name">${a.nome}</div>
-          <div class="apt-desc">${a.caratteristiche} · Max ${a.capacita} ospiti</div>
-          <a href="${a.url}" target="_blank" class="apt-link" onclick="event.stopPropagation()">
+    <div class="fv-results-meta">
+      <div class="fv-results-title">
+        ${n === 1 ? '1 appartamento disponibile' : n + ' appartamenti disponibili'} 🎉
+      </div>
+      <div class="fv-results-sub">Seleziona fino a ${MAX_APT} appartamenti per richiedere il preventivo</div>
+    </div>
+    <div class="fv-counter" id="counter">0 / ${MAX_APT} selezionati</div>
+    ${disp.map(a => `
+      <div class="fv-apt" id="apt-${a.id}" onclick="togApt(${JSON.stringify(a).replace(/"/g,'&quot;')})">
+        <div class="fv-apt-icon">${APT_ICONS[a.tipo] || '🏡'}</div>
+        <div class="fv-apt-info">
+          <div class="fv-apt-name">${a.nome}</div>
+          <div class="fv-apt-desc">${a.caratteristiche} · max ${a.capacita} ospiti</div>
+          <a href="${a.url}" target="_blank" class="fv-apt-link" onclick="event.stopPropagation()">
             Vedi foto e dettagli ↗
           </a>
         </div>
-        <div class="apt-checkbox" id="chk-${a.id}"></div>
+        <div class="fv-chk" id="chk-${a.id}"></div>
       </div>`).join('')}`;
 }
 
-function toggleApt(apt) {
-  const idx = selectedApts.findIndex(a => a.id === apt.id);
-
+function togApt(apt) {
+  const idx = selApts.findIndex(a => a.id === apt.id);
   if (idx >= 0) {
-    // Deseleziona
-    selectedApts.splice(idx, 1);
-    document.getElementById('card-' + apt.id).classList.remove('selected');
-    document.getElementById('chk-'  + apt.id).classList.remove('checked');
-    document.getElementById('chk-'  + apt.id).textContent = '';
+    selApts.splice(idx, 1);
+    document.getElementById('apt-' + apt.id).classList.remove('fv-apt-sel');
+    const c = document.getElementById('chk-' + apt.id);
+    c.classList.remove('on'); c.textContent = '';
   } else {
-    // Seleziona (max 2)
-    if (selectedApts.length >= MAX_SELEZIONE) return;
-    selectedApts.push(apt);
-    document.getElementById('card-' + apt.id).classList.add('selected');
-    const chk = document.getElementById('chk-' + apt.id);
-    chk.classList.add('checked');
-    chk.textContent = '✓';
+    if (selApts.length >= MAX_APT) return;
+    selApts.push(apt);
+    document.getElementById('apt-' + apt.id).classList.add('fv-apt-sel');
+    const c = document.getElementById('chk-' + apt.id);
+    c.classList.add('on'); c.textContent = '✓';
   }
-
-  // Aggiorna counter e stato card disabilitate
-  aggiornaCounter();
-  hideErr('err1b');
+  updCounter(); hideErr('err1b');
 }
 
-function aggiornaCounter() {
-  const n       = selectedApts.length;
-  const counter = document.getElementById('counter');
-  if (!counter) return;
-  counter.textContent = `${n} / ${MAX_SELEZIONE} selezionati`;
-  counter.className   = 'selection-counter' +
-    (n === 0 ? '' : n < MAX_SELEZIONE ? ' has-selection' : ' max-selection');
-
-  // Disabilita le card non selezionate quando si raggiunge il massimo
-  document.querySelectorAll('.apt-card').forEach(card => {
-    const id = card.id.replace('card-', '');
-    const isSelected = selectedApts.some(a => a.id === id);
-    if (n >= MAX_SELEZIONE && !isSelected) {
-      card.classList.add('disabled');
-    } else {
-      card.classList.remove('disabled');
-    }
+function updCounter() {
+  const n = selApts.length;
+  const el = document.getElementById('counter');
+  if (!el) return;
+  el.textContent = `${n} / ${MAX_APT} selezionati`;
+  el.className = 'fv-counter' + (n === 0 ? '' : n < MAX_APT ? ' sel' : ' full');
+  document.querySelectorAll('.fv-apt').forEach(card => {
+    const id = card.id.replace('apt-', '');
+    const isSel = selApts.some(a => a.id === id);
+    card.classList.toggle('fv-apt-disabled', n >= MAX_APT && !isSel);
   });
 }
 
-function goStep2() {
-  if (selectedApts.length === 0) return showErr('err1b', '⚠️ Seleziona almeno un appartamento per continuare.');
+function goS2() {
+  if (selApts.length === 0) return showErr('err1b', '⚠️ Seleziona almeno un appartamento.');
   setStep(2);
-  document.getElementById('step1b').style.display = 'none';
-  document.getElementById('step2').style.display  = 'block';
+  document.getElementById('s1b').style.display = 'none';
+  document.getElementById('s2').style.display  = 'block';
 
-  // Summary box con tutti gli appartamenti selezionati
-  const { checkin, checkout, adulti, bambini, animali } = searchParams;
-  const animaliStr = animali && (animali.piccoli + animali.grandi) > 0
-    ? `🐾 ${animali.piccoli > 0 ? animali.piccoli + ' piccola taglia' : ''}${animali.piccoli > 0 && animali.grandi > 0 ? ', ' : ''}${animali.grandi > 0 ? animali.grandi + ' grande taglia' : ''}${animali.tipo ? ` (${animali.tipo})` : ''}`
+  const { checkin, checkout, adulti, bambini, animali } = searchP;
+  const animStr = animali && (animali.piccoli + animali.grandi > 0)
+    ? `🐾 ${[animali.piccoli > 0 ? animali.piccoli + ' piccola taglia' : '',
+              animali.grandi  > 0 ? animali.grandi  + ' grande taglia' : '']
+              .filter(Boolean).join(', ')}${animali.tipo ? ' (' + animali.tipo + ')' : ''}`
     : '';
 
   document.getElementById('summaryBox').innerHTML = `
-    ${selectedApts.map(a => `
-      <div class="summary-apt">
-        <div class="summary-apt-icon">${EMOJI[a.tipo] || '🏡'}</div>
-        <div class="summary-apt-text">
-          <strong>${a.nome}</strong>
-          ${a.caratteristiche}
+    ${selApts.map(a => `
+      <div class="fv-summary-apt">
+        <div class="fv-summary-apt-icon">${APT_ICONS[a.tipo] || '🏡'}</div>
+        <div class="fv-summary-apt-text">
+          <strong>${a.nome}</strong>${a.caratteristiche}
         </div>
       </div>`).join('')}
-    <div class="summary-dates">
-      📅 ${formatDate(checkin)} → ${formatDate(checkout)}
+    <div class="fv-summary-footer">
+      📅 ${fmtDate(checkin)} → ${fmtDate(checkout)}
       &nbsp;·&nbsp; 👥 ${adulti} adulti${bambini > 0 ? ', ' + bambini + ' bambini' : ''}
-      ${animaliStr ? `<br>${animaliStr}` : ''}
+      ${animStr ? '<br>' + animStr : ''}
     </div>`;
 }
 
-function resetStep1() {
-  document.getElementById('step1b').style.display = 'none';
-  document.getElementById('step1').style.display  = 'block';
-  selectedApts = []; setStep(1);
+function resetS1() {
+  document.getElementById('s1b').style.display = 'none';
+  document.getElementById('s1').style.display  = 'block';
+  selApts = []; setStep(1);
 }
-function backToRisultati() {
-  document.getElementById('step2').style.display  = 'none';
-  document.getElementById('step1b').style.display = 'block';
+function backToRes() {
+  document.getElementById('s2').style.display  = 'none';
+  document.getElementById('s1b').style.display = 'block';
   setStep(1);
 }
 
-// ─── Step 2 — Invio preventivo ────────────
-async function inviaPreventivo() {
-  const nome     = document.getElementById('nome').value.trim();
-  const cognome  = document.getElementById('cognome').value.trim();
-  const email    = document.getElementById('email').value.trim();
-  const telefono = document.getElementById('telefono').value.trim();
-  const note     = document.getElementById('note').value.trim();
+// ── Step 2 — Invio ────────────────────────────────────────
+async function invia() {
+  const nome    = document.getElementById('nome').value.trim();
+  const cognome = document.getElementById('cognome').value.trim();
+  const email   = document.getElementById('email').value.trim();
+  const tel     = document.getElementById('tel').value.trim();
+  const note    = document.getElementById('note').value.trim();
 
-  if (!nome || !cognome || !email || !telefono)
+  if (!nome || !cognome || !email || !tel)
     return showErr('err2', '⚠️ Compila tutti i campi obbligatori (*).');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return showErr('err2', '⚠️ Inserisci un indirizzo email valido.');
   hideErr('err2');
 
-  setLoading('btnSend', true, 'Invio in corso...');
-
+  setLoad('btnSend', true, 'Invio in corso...');
   try {
     const res = await fetch(`${BACKEND}/api/send_quote`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        nome, cognome, email, telefono, note,
-        appartamenti: selectedApts,   // array di max 2
-        ...searchParams,
-      }),
+        nome, cognome, email, telefono: tel, note,
+        appartamenti: selApts, ...searchP
+      })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Errore del server');
-
     setStep(3);
-    document.getElementById('step2').style.display = 'none';
-    document.getElementById('step3').style.display = 'block';
-    document.getElementById('nomeConferma').textContent  = nome;
-    document.getElementById('emailConferma').textContent = email;
+    document.getElementById('s2').style.display = 'none';
+    document.getElementById('s3').style.display = 'block';
+    document.getElementById('nomeConf').textContent  = nome;
+    document.getElementById('emailConf').textContent = email;
   } catch(e) {
     showErr('err2', `⚠️ ${e.message}`);
   } finally {
-    setLoading('btnSend', false, 'Invia richiesta preventivo');
+    setLoad('btnSend', false, 'Invia richiesta preventivo');
   }
 }
 
 function nuovaRicerca() {
-  ['checkin','checkout','nome','cognome','email','telefono','note','animali-tipo'].forEach(id => {
-    document.getElementById(id).value = '';
+  ['checkin','checkout','nome','cognome','email','tel','note','anim-tipo'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
   });
-  document.getElementById('adulti').value = '';
-  document.getElementById('bambini').value = '0';
-  document.getElementById('animali-piccoli').value = '0';
-  document.getElementById('animali-grandi').value  = '0';
-  document.getElementById('animali-tipo-group').style.display = 'none';
-  selectedApts = []; searchParams = {};
-  document.getElementById('step3').style.display = 'none';
-  document.getElementById('step1').style.display = 'block';
+  document.getElementById('adulti').value   = '';
+  document.getElementById('bambini').value  = '0';
+  document.getElementById('anim-pic').value = '0';
+  document.getElementById('anim-gra').value = '0';
+  document.getElementById('anim-tipo-wrap').style.display = 'none';
+  selApts = []; searchP = {};
+  document.getElementById('s3').style.display = 'none';
+  document.getElementById('s1').style.display = 'block';
   setStep(1);
 }
 
-// ─── Utilità UI ───────────────────────────
-function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block'; }
+// ── Utilità UI ────────────────────────────────────────────
+function showErr(id, msg) { const e = document.getElementById(id); e.textContent = msg; e.style.display = 'block'; }
 function hideErr(id)       { document.getElementById(id).style.display = 'none'; }
-function setLoading(btnId, loading, label) {
-  const btn = document.getElementById(btnId);
-  btn.disabled = loading;
-  btn.innerHTML = loading ? `<div class="spinner"></div> ${label}` : label;
+function setLoad(id, on, txt) {
+  const b = document.getElementById(id); b.disabled = on;
+  b.innerHTML = on ? `<div class="fv-spinner"></div> ${txt}` : txt;
 }
 function setStep(n) {
   [1,2,3].forEach(i => {
-    document.getElementById('dot'+i).className = 'step-circle ' + (i < n ? 'done' : i === n ? 'active' : 'inactive');
-    document.getElementById('lbl'+i).className = 'step-label'   + (i === n ? ' active' : '');
+    document.getElementById('dot'+i).className =
+      'fv-step-circle ' + (i < n ? 'done' : i === n ? 'active' : 'inactive');
+    document.getElementById('lbl'+i).className =
+      'fv-step-label' + (i === n ? ' active' : '');
   });
   [1,2].forEach(i => {
-    document.getElementById('conn'+i).className = 'step-connector' + (i < n ? ' done' : '');
+    document.getElementById('ln'+i).className =
+      'fv-step-line' + (i < n ? ' done' : '');
   });
 }
 </script>
