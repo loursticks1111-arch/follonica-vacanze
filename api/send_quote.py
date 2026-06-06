@@ -54,10 +54,10 @@ def build_animali_str(animali):
 # Usa una mini-tabella invece di flexbox (non supportato da Gmail/Outlook)
 def row(label, value):
     return (
-        '<table width="100%%" cellpadding="0" cellspacing="0" style="margin:4px 0;border-bottom:1px solid #E8DDD0">'
+        '<table width="100%%" cellpadding="0" cellspacing="0" style="margin:4px 0;border-bottom:1px solid #E2E8EE">'
         '<tr>'
-        '<td style="font-size:14px;color:#7A6E63;padding:6px 12px 6px 0;width:110px;vertical-align:top">%s</td>'
-        '<td style="font-size:14px;color:#1C1812;font-weight:600;padding:6px 0;vertical-align:top">%s</td>'
+        '<td style="font-size:14px;color:#6B7280;padding:6px 12px 6px 0;width:110px;vertical-align:top">%s</td>'
+        '<td style="font-size:14px;color:#2C2C2C;font-weight:600;padding:6px 0;vertical-align:top">%s</td>'
         '</tr></table>'
     ) % (label, value)
 
@@ -68,7 +68,7 @@ def build_apt_rows_proprietario(appartamenti):
         apt_id = a.get('id', '').upper()
         nome   = a.get('nome', '')
         url    = a.get('url', '')
-        rows.append(row(apt_id, '%s &nbsp;<a href="%s" style="font-size:12px;color:#B85224">Vedi pagina &rarr;</a>' % (nome, url)))
+        rows.append(row(apt_id, '%s &nbsp;<a href="%s" style="font-size:12px;color:#1A6FA8">Vedi pagina &rarr;</a>' % (nome, url)))
     return ''.join(rows)
 
 
@@ -86,7 +86,7 @@ def build_apt_cta_buttons(appartamenti):
         url  = a.get('url', '')
         btn = (
             '<div style="text-align:center;margin:10px 0">'
-            '<a href="%s" style="display:inline-block;background:#B85224;'
+            '<a href="%s" style="display:inline-block;background:#1A6FA8;'
             'color:white !important;text-decoration:none;padding:13px 30px;'
             'border-radius:10px;font-weight:600;font-size:14px;font-family:Arial,sans-serif">'
             'Vedi foto %s &rarr;</a></div>'
@@ -101,63 +101,135 @@ def email_proprietario(p, cfg):
     bambini_str = (' + %s bambini' % p['bambini']) if int(p.get('bambini', 0)) > 0 else ''
     anim_str    = build_animali_str(p.get('animali'))
     anim_row    = row('Animali', anim_str) if anim_str else ''
-    note_row    = row('Note', '<span style="font-style:italic">%s</span>' % p['note']) if p.get('note') else ''
-    settimane   = notti // 7
-    sett_label  = 'settimana' if settimane == 1 else 'settimane'
+    note_html   = ''
+    if p.get('note'):
+        note_html = """
+        <div style="margin-top:20px">
+          <p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+                    color:#0D8C8C;margin:0 0 8px">Note aggiuntive</p>
+          <div style="background:#EBF5F5;border-left:4px solid #0D8C8C;border-radius:6px;
+                      padding:14px 16px;font-size:14px;color:#2C2C2C;
+                      font-style:italic;line-height:1.65">%s</div>
+        </div>""" % p['note']
 
+    settimane  = notti // 7
+    sett_label = 'settimana' if settimane == 1 else 'settimane'
     appartamenti = p.get('appartamenti', [])
-    n_apt        = len(appartamenti)
-    apt_label    = '%d appartamento richiesto' % n_apt if n_apt == 1 else '%d appartamenti richiesti' % n_apt
-    apt_rows     = build_apt_rows_proprietario(appartamenti)
+    n_apt      = len(appartamenti)
+    apt_label  = '%d appartamento richiesto' % n_apt if n_apt == 1 else '%d appartamenti richiesti' % n_apt
+    apt_rows   = build_apt_rows_proprietario(appartamenti)
 
-    html = """<!DOCTYPE html>
-<html lang="it"><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;background:#F5EFE4;margin:0;padding:20px">
-<div style="background:white;max-width:600px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)">
+    return """<!DOCTYPE html>
+<html lang="it" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Nuova richiesta preventivo</title>
+  <style>
+    body { margin:0; padding:0; background:#F4F7FA;
+           font-family:Arial,Helvetica,sans-serif; -webkit-text-size-adjust:100%%; }
+    table { border-collapse:collapse; }
+    img { border:0; display:block; }
+    a { color:#1A6FA8; }
+    .wrap { width:100%%; max-width:600px; margin:0 auto; }
+    @media screen and (max-width:620px) {
+      .wrap        { width:100%% !important; }
+      .pad         { padding:16px !important; }
+      .pad-sm      { padding:12px !important; }
+      .font-sm     { font-size:13px !important; }
+      .btn-full    { width:100%% !important; text-align:center !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#F4F7FA">
 
-  <div style="background:linear-gradient(135deg,#8B3A10,#B85224);padding:28px 32px;color:white">
-    <h1 style="margin:0;font-size:22px">&#127968; Nuova richiesta di preventivo</h1>
-    <p style="margin:6px 0 0;opacity:.8;font-size:14px">%(site)s &mdash; ricevuta ora</p>
-  </div>
+<!-- Wrapper -->
+<table width="100%%" cellpadding="0" cellspacing="0" role="presentation">
+<tr><td align="center" style="padding:24px 8px">
 
-  <div style="padding:28px 32px">
+<table class="wrap" cellpadding="0" cellspacing="0" role="presentation"
+       style="width:100%%;max-width:600px;background:#ffffff;
+              border-radius:10px;overflow:hidden;
+              box-shadow:0 2px 16px rgba(0,0,0,0.08)">
 
-    <h2 style="color:#2C6B7A;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:0 0 10px">%(apt_label)s</h2>
-    <div style="background:#F5EFE4;border-radius:10px;padding:16px;border-left:4px solid #B85224;margin-bottom:22px">
-      %(apt_rows)s
-    </div>
+  <!-- Header -->
+  <tr>
+    <td style="background:linear-gradient(135deg,#125082,#1A6FA8);
+               padding:22px 28px;text-align:left">
+      <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;
+                text-transform:uppercase;color:rgba(255,255,255,0.75)">%(site)s</p>
+      <h1 style="margin:6px 0 0;font-size:20px;font-weight:700;
+                 color:#ffffff;line-height:1.3">
+        &#127968; Nuova richiesta di preventivo
+      </h1>
+    </td>
+  </tr>
 
-    <h2 style="color:#2C6B7A;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:0 0 10px">Periodo e ospiti</h2>
-    <div style="background:#F5EFE4;border-radius:10px;padding:16px;border-left:4px solid #B85224;margin-bottom:22px">
-      %(row_arrivo)s
-      %(row_partenza)s
-      %(row_durata)s
-      %(row_ospiti)s
-      %(anim_row)s
-    </div>
+  <!-- Corpo -->
+  <tr>
+    <td class="pad" style="padding:24px 28px">
 
-    <h2 style="color:#2C6B7A;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin:0 0 10px">Dati cliente</h2>
-    <div style="background:#F5EFE4;border-radius:10px;padding:16px;border-left:4px solid #B85224;margin-bottom:22px">
-      %(row_nome)s
-      %(row_email)s
-      %(row_telefono)s
-    </div>
+      <!-- Appartamenti -->
+      <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:1px;
+                text-transform:uppercase;color:#1A6FA8">%(apt_label)s</p>
+      <div style="background:#EBF4FB;border-left:4px solid #1A6FA8;
+                  border-radius:6px;padding:14px 16px;margin-bottom:20px">
+        %(apt_rows)s
+      </div>
 
-    %(sezione_note)s
+      <!-- Periodo -->
+      <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:1px;
+                text-transform:uppercase;color:#1A6FA8">Periodo e ospiti</p>
+      <div style="background:#EBF4FB;border-left:4px solid #1A6FA8;
+                  border-radius:6px;padding:14px 16px;margin-bottom:20px">
+        %(row_arrivo)s
+        %(row_partenza)s
+        %(row_durata)s
+        %(row_ospiti)s
+        %(anim_row)s
+      </div>
 
-    <div style="text-align:center;margin-top:8px">
-      <a href="mailto:%(email)s?subject=Preventivo - %(site)s"
-         style="display:inline-block;background:#B85224;color:white !important;
-                text-decoration:none;padding:13px 30px;border-radius:8px;
-                font-weight:600;font-size:14px;font-family:Arial,sans-serif">
-        Rispondi al cliente &rarr;
-      </a>
-    </div>
+      <!-- Cliente -->
+      <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:1px;
+                text-transform:uppercase;color:#1A6FA8">Dati cliente</p>
+      <div style="background:#EBF4FB;border-left:4px solid #1A6FA8;
+                  border-radius:6px;padding:14px 16px;margin-bottom:20px">
+        %(row_nome)s
+        %(row_email)s
+        %(row_tel)s
+      </div>
 
-  </div>
-  <div style="background:#F5EFE4;padding:14px 32px;font-size:12px;color:#7A6E63;text-align:center">
-    %(site)s &middot; Messaggio automatico
-  </div>
-</div>
+      %(note_html)s
+
+      <!-- CTA -->
+      <table width="100%%" cellpadding="0" cellspacing="0" role="presentation"
+             style="margin-top:22px">
+      <tr><td align="center">
+        <a class="btn-full" href="mailto:%(email)s?subject=Preventivo - %(site)s"
+           style="display:inline-block;background:#1A6FA8;color:#ffffff !important;
+                  text-decoration:none;padding:13px 32px;border-radius:7px;
+                  font-size:14px;font-weight:700;letter-spacing:.3px;
+                  font-family:Arial,Helvetica,sans-serif">
+          Rispondi al cliente &rarr;
+        </a>
+      </td></tr></table>
+
+    </td>
+  </tr>
+
+  <!-- Footer -->
+  <tr>
+    <td style="background:#F4F7FA;padding:14px 28px;text-align:center;
+               border-top:1px solid #D1D9E0">
+      <p style="margin:0;font-size:11px;color:#6B7280">
+        %(site)s &middot; Messaggio automatico
+      </p>
+    </td>
+  </tr>
+
+</table>
+</td></tr></table>
 </body></html>""" % {
         'site':        cfg['site'],
         'apt_label':   apt_label,
@@ -168,19 +240,11 @@ def email_proprietario(p, cfg):
         'row_ospiti':  row('Ospiti',   '%s adulti%s (tot. %d)' % (p['adulti'], bambini_str, ospiti)),
         'anim_row':    anim_row,
         'row_nome':    row('Nome',     '%s %s' % (p['nome'], p['cognome'])),
-        'row_email':   row('Email',    '<a href="mailto:%(e)s" style="color:#B85224">%(e)s</a>' % {'e': p['email']}),
-        'row_telefono':row('Telefono', p['telefono']),
-        'sezione_note': (
-            '<h2 style="color:#2C6B7A;font-size:13px;letter-spacing:1px;'
-            'text-transform:uppercase;margin:0 0 10px">Note aggiuntive</h2>'
-            '<div style="background:#FFF8F0;border-radius:10px;padding:16px 20px;'
-            'border-left:4px solid #E8A060;margin-bottom:22px;font-size:14px;'
-            'color:#1C1812;font-style:italic;line-height:1.7">%s</div>'
-        ) % p['note'] if p.get('note') else '',
+        'row_email':   row('Email',    '<a href="mailto:%(e)s" style="color:#1A6FA8">%(e)s</a>' % {'e': p['email']}),
+        'row_tel':     row('Telefono', p['telefono']),
+        'note_html':   note_html,
         'email':       p['email'],
     }
-    return html
-
 
 def email_cliente(p, cfg):
     notti       = calc_notti(p['checkin'], p['checkout'])
@@ -190,46 +254,116 @@ def email_cliente(p, cfg):
     apt_rows    = build_apt_rows_cliente(p.get('appartamenti', []))
     apt_buttons = build_apt_cta_buttons(p.get('appartamenti', []))
 
-    html = """<!DOCTYPE html>
-<html lang="it"><head><meta charset="UTF-8"></head><body style="font-family:Arial,sans-serif;background:#F5EFE4;margin:0;padding:20px">
-<div style="background:white;max-width:600px;margin:0 auto;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)">
+    return """<!DOCTYPE html>
+<html lang="it" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Richiesta ricevuta</title>
+  <style>
+    body { margin:0; padding:0; background:#F4F7FA;
+           font-family:Arial,Helvetica,sans-serif; -webkit-text-size-adjust:100%%; }
+    table { border-collapse:collapse; }
+    img   { border:0; display:block; }
+    a     { color:#1A6FA8; }
+    .wrap { width:100%%; max-width:600px; margin:0 auto; }
+    @media screen and (max-width:620px) {
+      .wrap     { width:100%% !important; }
+      .pad      { padding:16px !important; }
+      .btn-full { width:100%% !important; text-align:center !important;
+                  display:block !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#F4F7FA">
 
-  <div style="background:linear-gradient(135deg,#8B3A10,#B85224);padding:28px 32px;color:white;text-align:center">
-    <div style="font-size:48px;margin-bottom:10px">&#9989;</div>
-    <h1 style="margin:0;font-size:22px">Richiesta ricevuta!</h1>
-    <p style="margin:8px 0 0;opacity:.85;font-size:15px">Grazie %(nome)s, ti risponderemo entro poche ore</p>
-  </div>
+<table width="100%%" cellpadding="0" cellspacing="0" role="presentation">
+<tr><td align="center" style="padding:24px 8px">
 
-  <div style="padding:28px 32px">
-    <p style="font-size:15px;color:#1C1812;line-height:1.7">
-      Abbiamo ricevuto la tua richiesta di preventivo.
-      Ti contatteremo presto all'indirizzo <strong>%(email)s</strong>.
-    </p>
+<table class="wrap" cellpadding="0" cellspacing="0" role="presentation"
+       style="width:100%%;max-width:600px;background:#ffffff;
+              border-radius:10px;overflow:hidden;
+              box-shadow:0 2px 16px rgba(0,0,0,0.08)">
 
-    <div style="background:linear-gradient(135deg,#F5EFE4,#EDE2D4);border-radius:12px;padding:20px;border-left:4px solid #B85224;margin-bottom:22px">
-      <div style="font-weight:700;font-size:15px;color:#B85224;margin-bottom:12px">&#128203; Riepilogo</div>
-      %(apt_rows)s
-      %(row_arrivo)s
-      %(row_partenza)s
-      %(row_durata)s
-      %(row_ospiti)s
-      %(anim_row)s
-    </div>
+  <!-- Header -->
+  <tr>
+    <td style="background:linear-gradient(135deg,#125082,#1A6FA8);
+               padding:26px 28px;text-align:center">
+      <div style="font-size:42px;line-height:1;margin-bottom:10px">&#9989;</div>
+      <h1 style="margin:0;font-size:22px;font-weight:700;color:#ffffff">
+        Richiesta ricevuta!
+      </h1>
+      <p style="margin:6px 0 0;font-size:14px;color:rgba(255,255,255,0.82)">
+        Grazie %(nome)s, ti risponderemo entro poche ore
+      </p>
+    </td>
+  </tr>
 
-    %(apt_buttons)s
+  <!-- Intro -->
+  <tr>
+    <td class="pad" style="padding:22px 28px 0">
+      <p style="margin:0;font-size:15px;color:#2C2C2C;line-height:1.65">
+        Abbiamo ricevuto la tua richiesta di preventivo.<br>
+        Ti contatteremo presto all'indirizzo
+        <strong>%(email)s</strong>.
+      </p>
+    </td>
+  </tr>
 
-    <div style="background:#F0F7F9;border-radius:10px;padding:16px 20px;border-left:4px solid #2C6B7A">
-      <strong style="color:#2C6B7A">&#128222; Risposta urgente?</strong><br>
-      <span style="font-size:14px">Chiamaci al
-        <a href="tel:+39%(phone_raw)s" style="color:#2C6B7A">%(phone)s</a>
-      </span>
-    </div>
-  </div>
+  <!-- Riepilogo -->
+  <tr>
+    <td class="pad" style="padding:18px 28px">
+      <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:1px;
+                text-transform:uppercase;color:#1A6FA8">&#128203; Riepilogo</p>
+      <div style="background:linear-gradient(135deg,#EBF4FB,#E0EEF8);
+                  border-left:4px solid #1A6FA8;border-radius:6px;padding:14px 16px">
+        %(apt_rows)s
+        %(row_arrivo)s
+        %(row_partenza)s
+        %(row_durata)s
+        %(row_ospiti)s
+        %(anim_row)s
+      </div>
+    </td>
+  </tr>
 
-  <div style="background:#F5EFE4;padding:14px 32px;font-size:12px;color:#7A6E63;text-align:center;border-top:1px solid #E8DDD0">
-    %(site)s &middot; <a href="%(site_url)s" style="color:#B85224">%(site_url)s</a>
-  </div>
-</div>
+  <!-- Bottoni appartamenti -->
+  <tr>
+    <td class="pad" style="padding:0 28px 18px">
+      %(apt_buttons)s
+    </td>
+  </tr>
+
+  <!-- Contatti urgenza -->
+  <tr>
+    <td class="pad" style="padding:0 28px 22px">
+      <div style="background:#EBF5F5;border-left:4px solid #0D8C8C;
+                  border-radius:6px;padding:14px 16px">
+        <p style="margin:0 0 4px;font-weight:700;font-size:14px;color:#0D8C8C">
+          &#128222; Hai bisogno di una risposta urgente?
+        </p>
+        <p style="margin:0;font-size:14px;color:#2C2C2C">
+          Chiamaci al
+          <a href="tel:+39%(phone_raw)s" style="color:#0D8C8C;font-weight:700">
+            %(phone)s
+          </a>
+        </p>
+      </div>
+    </td>
+  </tr>
+
+  <!-- Footer -->
+  <tr>
+    <td style="background:#F4F7FA;padding:14px 28px;text-align:center;
+               border-top:1px solid #D1D9E0">
+      <p style="margin:0 0 4px;font-size:11px;color:#6B7280">%(site)s</p>
+      <a href="%(site_url)s" style="font-size:11px;color:#1A6FA8">%(site_url)s</a>
+    </td>
+  </tr>
+
+</table>
+</td></tr></table>
 </body></html>""" % {
         'nome':        p['nome'],
         'email':       p['email'],
@@ -245,8 +379,6 @@ def email_cliente(p, cfg):
         'site':        cfg['site'],
         'site_url':    cfg['site_url'],
     }
-    return html
-
 
 def send_emails(p, cfg):
     try:
