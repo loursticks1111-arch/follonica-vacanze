@@ -32,11 +32,11 @@ body {
   font-family: 'Lato', sans-serif;
   background: var(--bg);
   color: var(--text);
-  padding: 32px 16px 48px;
+  padding: 24px 0 48px;
 }
 
 /* ── Contenitore principale ─────────────────────────────── */
-.fv-wrap { max-width: 720px; margin: 0 auto; }
+.fv-wrap { max-width: 100%; margin: 0; }
 
 /* ── Intestazione form ──────────────────────────────────── */
 .fv-header {
@@ -56,7 +56,7 @@ body {
 }
 .fv-header h1 {
   font-family: 'Raleway', sans-serif;
-  font-size: clamp(22px, 4vw, 32px);
+  font-size: clamp(26px, 4vw, 36px);
   font-weight: 700; color: var(--text);
   line-height: 1.25; margin-bottom: 6px;
 }
@@ -116,15 +116,15 @@ body {
 .fv-row.three { grid-template-columns: 1fr 1fr 1fr; }
 .fv-group { display: flex; flex-direction: column; gap: 5px; }
 .fv-group label {
-  font-size: 10.5px; font-weight: 700; letter-spacing: .6px;
+  font-size: 12px; font-weight: 700; letter-spacing: .5px;
   text-transform: uppercase; color: var(--muted);
 }
 .fv-group label .req { color: var(--error); }
 
 .fv-group input, .fv-group select, .fv-group textarea {
-  width: 100%; padding: 10px 12px;
+  width: 100%; padding: 12px 14px;
   border: 1.5px solid var(--border); border-radius: 6px;
-  font-family: 'Lato', sans-serif; font-size: 14px;
+  font-family: 'Lato', sans-serif; font-size: 16px;
   color: var(--text); background: var(--bg);
   transition: border-color .2s, box-shadow .2s;
   appearance: none;
