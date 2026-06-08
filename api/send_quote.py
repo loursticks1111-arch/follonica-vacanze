@@ -1,7 +1,7 @@
 # api/send_quote.py
 
 from http.server import BaseHTTPRequestHandler
-import json, os
+import json, os, urllib.parse
 from datetime import date
 import resend
 
@@ -119,6 +119,34 @@ def email_proprietario(p, cfg):
     apt_label  = '%d appartamento richiesto' % n_apt if n_apt == 1 else '%d appartamenti richiesti' % n_apt
     apt_rows   = build_apt_rows_proprietario(appartamenti)
 
+    # Corpo pre-compilato per il pulsante "Rispondi al cliente"
+    apt_nomi_plain = '\n'.join(['- ' + a.get('nome', '') for a in appartamenti])
+    anim_plain     = ('\nAnimali: ' + build_animali_str(p.get('animali'))) if build_animali_str(p.get('animali')) else ''
+    note_plain     = ('\nNote: ' + p['note']) if p.get('note') else ''
+    body_plain = (
+        'Gentile %s %s,\n\n'
+        'In risposta alla sua richiesta di preventivo:\n\n'
+        '%s\n'
+        'Arrivo:   %s\n'
+        'Partenza: %s\n'
+        'Durata:   %d notti (%d %s)\n'
+        'Ospiti:   %s adulti%s%s%s\n\n'
+        'Cordiali saluti,\n'
+    ) % (
+        p['nome'], p['cognome'],
+        apt_nomi_plain,
+        format_date(p['checkin']),
+        format_date(p['checkout']),
+        notti, settimane, sett_label,
+        p['adulti'], bambini_str,
+        anim_plain, note_plain
+    )
+    mailto_href = 'mailto:%s?subject=%s&body=%s' % (
+        p['email'],
+        urllib.parse.quote('Preventivo - ' + cfg['site']),
+        urllib.parse.quote(body_plain)
+    )
+
     return """<!DOCTYPE html>
 <html lang="it" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -206,7 +234,7 @@ def email_proprietario(p, cfg):
       <table width="100%%" cellpadding="0" cellspacing="0" role="presentation"
              style="margin-top:22px">
       <tr><td align="center">
-        <a class="btn-full" href="mailto:%(email)s?subject=Preventivo - %(site)s"
+        <a class="btn-full" href="%(mailto_href)s"
            style="display:inline-block;background:#1A6FA8;color:#ffffff !important;
                   text-decoration:none;padding:13px 32px;border-radius:7px;
                   font-size:14px;font-weight:700;letter-spacing:.3px;
@@ -242,8 +270,9 @@ def email_proprietario(p, cfg):
         'row_nome':    row('Nome',     '%s %s' % (p['nome'], p['cognome'])),
         'row_email':   row('Email',    '<a href="mailto:%(e)s" style="color:#1A6FA8">%(e)s</a>' % {'e': p['email']}),
         'row_tel':     row('Telefono', p['telefono']),
-        'note_html':   note_html,
-        'email':       p['email'],
+        'note_html':    note_html,
+        'email':        p['email'],
+        'mailto_href':  mailto_href,
     }
 
 def email_cliente(p, cfg):
@@ -385,9 +414,11 @@ def send_emails(p, cfg):
         resend.api_key = cfg['resend_key']
         apt_nomi = ', '.join([a.get('nome', a.get('id', '')) for a in p.get('appartamenti', [])])
         resend.Emails.send({
-            "from": cfg['from_address'], "to": [cfg['owner_email']],
-            "subject": "Nuova richiesta preventivo - %s" % apt_nomi,
-            "html": email_proprietario(p, cfg),
+            "from":     cfg['from_address'],
+            "to":       [cfg['owner_email']],
+            "reply_to": [p['email']],   # ← Rispondi va direttamente al cliente
+            "subject":  "Nuova richiesta preventivo - %s" % apt_nomi,
+            "html":     email_proprietario(p, cfg),
         })
         resend.Emails.send({
             "from": cfg['from_address'], "to": [p['email']],
