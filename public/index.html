@@ -118,7 +118,6 @@ body {
 .fv-group label {
   font-size: 10.5px; font-weight: 700; letter-spacing: .6px;
   text-transform: uppercase; color: var(--muted);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .fv-group label .req { color: var(--error); }
 
@@ -288,10 +287,34 @@ body {
 .fv-panel { animation: fv-in .28s ease; }
 @keyframes fv-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
 
-@media (max-width: 520px) {
-  .fv-row, .fv-row.three { grid-template-columns: 1fr 1fr; }
-  .fv-card-body { padding: 18px; }
-  .fv-step-line { width: 36px; }
+/* ── Responsive ─────────────────────────────────────────── */
+
+/* Tablet stretto */
+@media (max-width: 640px) {
+  .fv-row.three { grid-template-columns: 1fr 1fr; }
+}
+
+/* Smartphone — colonna singola per tutto */
+@media (max-width: 480px) {
+  .fv-wrap { padding: 0; }
+  .fv-header { margin-bottom: 20px; }
+  .fv-header h1 { font-size: 20px; }
+  .fv-step-line { width: 28px; }
+  .fv-step-label { font-size: 10px; }
+
+  /* Date: una per riga su mobile */
+  .fv-row { grid-template-columns: 1fr; gap: 12px; }
+  .fv-row.three { grid-template-columns: 1fr 1fr; }
+
+  .fv-card-body { padding: 16px; }
+  .fv-card-head { padding: 14px 16px; }
+  .fv-card-head h2 { font-size: 15px; }
+
+  /* Labels: permettiamo il wrap su mobile */
+  .fv-group label {
+    white-space: normal;
+    font-size: 10px;
+  }
 }
 </style>
 </head>
