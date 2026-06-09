@@ -5,6 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verifica disponibilità — FollonicaVacanze.com</title>
 <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+/* Flatpickr — colori coordinati al sito */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange     { background:#1A6FA8; border-color:#1A6FA8; }
+.flatpickr-day:hover        { background:#EBF4FB; }
+.flatpickr-day.disabled,
+.flatpickr-day.disabled:hover { color:#ccc; background:transparent; cursor:not-allowed; }
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month    { background:#1A6FA8; }
+.flatpickr-weekday          { color:#1A6FA8; font-weight:700; }
+.flatpickr-input.flatpickr-input--fake { display:none; }
+/* Stile alt-input uguale agli altri campi */
+.flatpickr-input[readonly] {
+  width:100%; padding:10px 12px;
+  border:1.5px solid var(--border); border-radius:6px;
+  font-family:'Lato',sans-serif; font-size:14px;
+  color:var(--text); background:var(--bg);
+  transition:border-color .2s, box-shadow .2s;
+  cursor:pointer;
+}
+.flatpickr-input[readonly]:focus {
+  outline:none; border-color:var(--primary); background:#fff;
+  box-shadow:0 0 0 3px rgba(26,111,168,.12);
+}
+</style>
 <style>
 /* ── Palette ispirata al sito follonicavacanze.com ────────────
    Sfondo bianco/grigio chiaro, accento blu-teal mediterraneo,
@@ -362,14 +390,15 @@ body {
       <div class="fv-card-body fv-panel">
 
 <div class="fv-row" style="grid-template-columns: 1fr; display: flex; flex-direction: column; gap: 14px;">
+
           <div class="fv-group">
             <label>Data di arrivo (Check-in sabato ore 15–18)</label>
-            <input type="date" id="checkin">
+            <input type="text" id="checkin" placeholder="gg.mm.aaaa" readonly>
             <div class="fv-date-note">📌 Solo sabati selezionabili</div>
           </div>
           <div class="fv-group">
             <label>Data di partenza (Check-out sabato entro ore 10)</label>
-            <input type="date" id="checkout">
+            <input type="text" id="checkout" placeholder="gg.mm.aaaa" readonly>
           </div>
         </div>
         <div class="fv-row three" style="margin-bottom:18px">
@@ -523,7 +552,6 @@ let selApts = [];
 let searchP  = {};
 
 // ── Utilità date ─────────────────────────────────────────
-function isSab(s) { return new Date(s + 'T12:00:00').getDay() === 6; }
 function fmtDate(s) {
   return new Date(s + 'T12:00:00').toLocaleDateString('it-IT', {
     day: '2-digit', month: 'long', year: 'numeric'
@@ -550,27 +578,7 @@ function updAnimali() {
   document.getElementById('anim-tipo-wrap').style.display = (p + g > 0) ? 'block' : 'none';
 }
 
-// ── Validazione date solo sabato ──────────────────────────
-document.getElementById('checkin').addEventListener('change', function() {
-  if (this.value && !isSab(this.value)) {
-    showErr('err1', '⚠️ La data di arrivo deve essere un sabato.');
-    this.value = '';
-  } else {
-    hideErr('err1');
-    if (this.value) {
-      const ns = new Date(this.value + 'T12:00:00');
-      ns.setDate(ns.getDate() + 7);
-      document.getElementById('checkout').min = ns.toISOString().split('T')[0];
-      document.getElementById('checkout').value = '';
-    }
-  }
-});
-document.getElementById('checkout').addEventListener('change', function() {
-  if (this.value && !isSab(this.value)) {
-    showErr('err1', '⚠️ La data di partenza deve essere un sabato.');
-    this.value = '';
-  } else hideErr('err1');
-});
+
 
 // ── Step 1 — Verifica disponibilità ──────────────────────
 async function checkDisp() {
@@ -582,9 +590,8 @@ async function checkDisp() {
   const gra   = parseInt(document.getElementById('anim-gra').value) || 0;
   const tipo  = document.getElementById('anim-tipo').value.trim();
 
-  if (!ci || !co) return showErr('err1', '⚠️ Seleziona le date di arrivo e partenza.');
+ if (!ci || !co) return showErr('err1', '⚠️ Seleziona le date di arrivo e partenza.');
   if (!ad)        return showErr('err1', '⚠️ Seleziona il numero di adulti.');
-  if (!isSab(ci) || !isSab(co)) return showErr('err1', '⚠️ Entrambe le date devono essere sabati.');
   if ((pic + gra > 0) && !tipo) return showErr('err1', '⚠️ Specifica il tipo di animali.');
   hideErr('err1');
 
@@ -774,6 +781,49 @@ function nuovaRicerca() {
   setStep(1);
 }
 
+// ── Flatpickr — inizializzazione datepicker ───────────────
+function initFlatpickr() {
+  function nextSat() {
+    const d   = new Date();
+    const gg  = (6 - d.getDay() + 7) % 7 || 7;
+    const sat = new Date(d);
+    sat.setDate(d.getDate() + gg);
+    return sat;
+  }
+
+  const soloSabati = [function(date) { return date.getDay() === 6; }];
+
+  const opzioniBase = {
+    locale:        'it',
+    dateFormat:    'Y-m-d',       // valore interno → YYYY-MM-DD (per il backend)
+    altInput:      true,
+    altFormat:     'd/m/Y',       // visualizzato → gg/mm/aaaa
+    disableMobile: true,          // usa Flatpickr anche su mobile
+    enable:        soloSabati,
+    minDate:       nextSat(),
+  };
+
+  const fpCheckin = flatpickr('#checkin', {
+    ...opzioniBase,
+    onChange: function(dates) {
+      if (dates.length) {
+        hideErr('err1');
+        const settSucc = new Date(dates[0]);
+        settSucc.setDate(settSucc.getDate() + 7);
+        fpCheckout.set('minDate', settSucc);
+        fpCheckout.clear();
+      }
+    }
+  });
+
+  const fpCheckout = flatpickr('#checkout', {
+    ...opzioniBase,
+    onChange: function(dates) {
+      if (dates.length) hideErr('err1');
+    }
+  });
+}
+
 // ── Utilità UI ────────────────────────────────────────────
 function showErr(id, msg) { const e = document.getElementById(id); e.textContent = msg; e.style.display = 'block'; }
 function hideErr(id)       { document.getElementById(id).style.display = 'none'; }
@@ -793,6 +843,12 @@ function setStep(n) {
       'fv-step-line' + (i < n ? ' done' : '');
   });
 }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/it.js"></script>
+<script>
+  // Inizializza Flatpickr dopo il caricamento della libreria
+  document.addEventListener('DOMContentLoaded', initFlatpickr);
 </script>
 </body>
 </html>
